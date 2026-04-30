@@ -4,6 +4,10 @@ let g:mapleader=" "
 inoremap jk <Esc>
 inoremap kj <Esc>
 
+" Mobile freindly exit insert mode
+inoremap fj <Esc>
+inoremap jf <Esc>
+
 " Yank entire line
 nmap Y y$
 
