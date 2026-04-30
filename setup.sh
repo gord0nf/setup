@@ -54,6 +54,7 @@ load_preset() {
 
   while IFS=$'\r\n' read -r line; do
     ((line_no++))
+    [[ -z "$line" ]] && continue
     if [[ "$line" =~ extends:(.+) ]]; then
       local extended=$(get_preset_path "${BASH_REMATCH[1]}") && load_preset "$extended" ||
         warn "couldn't load line $line_no for $preset_path"
