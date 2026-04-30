@@ -5,6 +5,7 @@ HELP='usage: setup.sh [--config-only|-c] [--force|-f] [--all|-a] ...(things or s
 
 # logging
 THING=software
+PREFIX_COLOR="\033[34m"
 PREFIX_FORMAT='%s:'
 . "$SOFTWARE_ROOT/log.sh"
 

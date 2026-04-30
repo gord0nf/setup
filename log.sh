@@ -3,10 +3,11 @@ if [[ -z "$THING" ]]; then
   exit 1
 fi
 
-if [[ -z "$PREFIX_FORMAT" ]]; then
-  PREFIX_FORMAT='[%s]'
-fi
-PREFIX=$(printf "\033[38;5;%dm$THING\033[0m" $(shuf -i 67-231 -n 1)) # random 256 color
+# random 256 color
+[[ -z "$PREFIX_COLOR" ]] && PREFIX_COLOR="\033[38;5;$(shuf -i 67-231 -n 1)m"
+[[ -z "$PREFIX_FORMAT" ]] && PREFIX_FORMAT='[%s]'
+
+PREFIX=$(printf "%s$THING\033[0m" "$PREFIX_COLOR")
 PREFIX=$(printf -- "$PREFIX_FORMAT" "$PREFIX")
 
 log() {
