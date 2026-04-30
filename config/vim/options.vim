@@ -52,7 +52,7 @@ set selection=exclusive
 set mouse=a
 set modifiable
 set encoding=utf8
-set clipboard=unnamedplus
+set clipboard=unnamed
 
 " Command line completion
 set wildmenu
