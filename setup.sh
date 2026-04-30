@@ -57,6 +57,10 @@ load_preset() {
     if [[ "$line" =~ extends:(.+) ]]; then
       local extended=$(get_preset_path "${BASH_REMATCH[1]}") && load_preset "$extended" ||
         warn "couldn't load line $line_no for $preset_path"
+    elif [[ "$line" =~ pre:(.+) ]]; then
+      pre_commands+=("${BASH_REMATCH[1]}")
+    elif [[ "$line" =~ post:(.+) ]]; then
+      post_commands+=("${BASH_REMATCH[1]}")
     else
       add_thing "$line" || warn "couldn't load line $line_no for $preset_path"
     fi
@@ -70,6 +74,8 @@ install=true
 force=
 things=()
 other_scripts=()
+pre_commands=()
+post_commands=()
 
 # initial pass to get manager
 for ((i = 0; i < $#; i++)); do
@@ -156,6 +162,11 @@ fi
 
 source "$SOFTWARE_ROOT/managers/$manager.sh"
 manager_can_use || fatal "cannot use $manager manager on your system"
+
+for cmd in "${pre_commands[@]}"; do
+  eval "$cmd" || fatal 'precommand failed'
+done
+
 command_exists manager_preinstall && manager_preinstall
 
 for thing in "${things[@]}"; do
@@ -187,4 +198,8 @@ for script in "${other_scripts[@]}"; do
   bash "$script" '' $force
   log_result "$script"
   echo # style
+done
+
+for cmd in "${post_commands[@]}"; do
+  eval "$cmd" || fatal 'postcommand failed'
 done
