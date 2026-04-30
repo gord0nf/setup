@@ -6,25 +6,21 @@ if [[ "$2" == '--force' ]]; then
   force=true
 fi
 
-THING=golang
-source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
+THING=nodejs
+source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
   echo "fatal: couldn't source utils" >&2
   exit 1
 }
 
-get_version() {
-  curl --ssl-revoke-best-effort 'https://go.dev/VERSION?m=text' |
-    grep -P '^go\d+\.\d+\.\d+$'
-}
-
 get_download_url() {
   local version=$1
+
   local os=
   local arch=
   local ext=
   case "$(get_os)" in
   windows)
-    os=windows
+    os=win
     ext=zip
     ;;
   mac)
@@ -33,26 +29,26 @@ get_download_url() {
     ;;
   linux)
     os=linux
-    ext=tar.gz
+    ext=tar.xz
     ;;
   esac
   case "$(get_arch)" in
-  amd/x64) arch=amd64 ;;
+  amd/x64) arch=x64 ;;
   arm) arch=arm64 ;;
-  x32) arch=386 ;;
+  x32) fatal 'arch not supported' ;;
   esac
 
-  echo "https://go.dev/dl/$version.$os-$arch.$ext"
+  echo "https://nodejs.org/dist/$version/node-$version-$os-$arch.$ext"
 }
 
-if ! $force && command_exists go; then
+if ! $force && command_exists node; then
   log 'already installed'
 else
   log 'getting version'
-  version=$(get_version)
+  version=$(get_latest_github_tag 'nodejs/node')
   url=$(get_download_url "$version")
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
-  register go "$version" "$install_dir/bin"
+  register nodejs "$version" "$install_dir"
 fi
