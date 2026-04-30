@@ -162,13 +162,17 @@ download_and_extract() {
 
   rm -f "$tmp"
 
-  # if archive contained one root dir, mv contents to outdir and delete the empty root
-  items=$(ls "$outdir")
-  rootdir="$outdir/${items[0]}"
-  if (("${#items[@]}" == 1)) && [[ -d "$rootdir" ]]; then
-    mv "$rootdir"/* "$rootdir"/.* "$outdir"
-    rmdir "$rootdir"
-  fi
+  # remove nested root dirs until the outdir is the root dir
+  while true; do
+    items=$(ls -A "$outdir")
+    rootdir="$outdir/${items[0]}"
+    if (("${#items[@]}" == 1)) && [[ -d "$rootdir" ]]; then
+      mv "$rootdir"/* "$rootdir"/.* "$outdir" &>/dev/null
+      rmdir "$rootdir"
+    else
+      break
+    fi
+  done
 }
 
 atomic_download_and_extract() {
