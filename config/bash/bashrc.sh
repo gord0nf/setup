@@ -1,15 +1,14 @@
-profiledir=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
-source "$profiledir/utils.sh"
-source "$profiledir/aliases.sh"
+export BASH_CONFIG=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
+export SOFTWARE="$(realpath "$BASH_CONFIG/../../")" # @gord0nf/software specific
 
 export TERM=xterm-256color
 export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
 export LANG="en_US.UTF-8"
 
-export SOFTWARE="$(realpath "$profiledir/../../")" # @gord0nf/software specific
+source "$BASH_CONFIG/utils.sh"
 
-### Path ------------------------------------------------------------------------------------------
+# path --------------------------------------------------------------------------------------------
 
 if [[ -f "$SOFTWARE/software.csv" ]]; then
   skip_headers=1
@@ -25,7 +24,7 @@ if [[ -f "$SOFTWARE/software.csv" ]]; then
   done <"$SOFTWARE/software.csv"
 fi
 
-### Cool command prompt ---------------------------------------------------------------------------
+# oh-my-posh --------------------------------------------------------------------------------------
 
 if command_exists oh-my-posh; then
   for conf in custom half-life takuya; do
@@ -36,3 +35,7 @@ if command_exists oh-my-posh; then
     fi
   done
 fi
+
+# -------------------------------------------------------------------------------------------------
+
+source "$BASH_CONFIG/aliases.sh"
