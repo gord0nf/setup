@@ -86,6 +86,7 @@ done
 # if not specified, use first usable manager
 if [[ -z "$manager" ]]; then
   for manager in $(ls "$SOFTWARE_ROOT/managers/"*.sh); do
+    [[ "$manager" == */manual.sh ]] && continue # save manual for last
     manager=$(
       source "$manager"
       manager_can_use &>/dev/null && echo "$manager"
@@ -95,7 +96,7 @@ if [[ -z "$manager" ]]; then
       break
     }
   done
-  [[ -z "$manager" ]] && fatal 'none of the managers can be used on your system'
+  [[ -z "$manager" ]] && set_manager manual
   log "no manager specified, defaulting to $manager"
 fi
 
