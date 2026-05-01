@@ -20,7 +20,7 @@ for powershell in "${flavors[@]}"; do
   case $powershell in
   powershell)
     log 'running initial setup for Windows PowerShell'
-    powershell -NoProfile -Command "$(dirname "${BASH_SOURCE[0]}")/Setup-Powershell.ps1"
+    powershell -NoProfile -Command "$(dirname "${BASH_SOURCE[0]}")/../Setup-Powershell.ps1"
     ;;
   # TODO pwsh)
   esac
