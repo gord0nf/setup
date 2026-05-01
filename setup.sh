@@ -93,14 +93,14 @@ done
 
 # if not specified, use first usable manager
 if [[ -z "$manager" ]]; then
-  for manager in $(ls "$SOFTWARE_ROOT/managers/"*.sh); do
-    [[ "$manager" == */manual.sh ]] && continue # save manual for last
-    manager=$(
-      source "$manager"
-      manager_can_use &>/dev/null && echo "$manager"
+  for manager_script in $(ls "$SOFTWARE_ROOT/managers/"*.sh); do
+    [[ "$manager_script" == */manual.sh ]] && continue # save manual for last
+    manager_script=$(
+      source "$manager_script"
+      manager_can_use &>/dev/null && echo "$manager_script"
     )
-    [[ -z "$manager" ]] || {
-      set_manager "$(basename -s .sh "$manager")"
+    ! [[ -z "$manager_script" ]] && {
+      set_manager "$(basename -s .sh "$manager_script")"
       break
     }
   done
