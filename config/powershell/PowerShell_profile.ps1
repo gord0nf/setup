@@ -221,3 +221,33 @@ if (Test-Binary oh-my-posh) {
     Select-Object -First 1
 	oh-my-posh init pwsh --config "$ompConfig" | Invoke-Expression
 }
+
+# Change wallpaper --------------------------------------------------------------------------------
+
+Add-Type -TypeDefinition @"
+using System.Runtime.InteropServices;
+public class wallpaper
+{
+ public const int SetDesktopWallpaper = 20;
+ public const int UpdateIniFile = 0x01;
+ public const int SendWinIniChange = 0x02;
+ [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+  private static extern int SystemParametersInfo (int uAction, int uParam, string lpvParam, int fuWinIni);
+ public static void SetWallpaper ( string path )
+ {
+  SystemParametersInfo( SetDesktopWallpaper, 0, path, UpdateIniFile | SendWinIniChange );
+ }
+}
+"@
+$ThemeDir = "$env:APPDATA\Microsoft\Windows\Themes"
+
+function Set-Wallpaper() {
+  param ( [string]$Path )
+  Remove-Item "$ThemeDir\TranscodedWallpaper" -ErrorAction SilentlyContinue
+  Copy-Item "$Path" "$ThemeDir\TranscodedWallpaper"
+  [wallpaper]::SetWallpaper("$Path") # Refresh wallpaper
+}
+
+function Random-Wallpaper() {
+  Set-Wallpaper "$(Get-ChildItem "$ThemeDir\wallpapers" | Select-Object -ExpandProperty FullName | Get-Random)"
+}
