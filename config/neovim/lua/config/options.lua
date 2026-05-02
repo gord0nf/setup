@@ -43,7 +43,7 @@ vim.opt.timeoutlen = 500
 vim.opt.ttimeoutlen = 0
 vim.opt.autoread = true
 vim.opt.autowrite = false
-local undodir = vim.fn.expand('~/.vim/undodir')
+local undodir = vim.fs.joinpath(vim.fn.stdpath('data'), '.undodir')
 vim.opt.undodir = undodir
 if vim.fn.isdirectory(undodir) == 0 then
   vim.fn.mkdir(undodir, 'p')
