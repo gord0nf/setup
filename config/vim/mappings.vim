@@ -8,6 +8,9 @@ inoremap kj <Esc>
 inoremap fj <Esc>
 inoremap jf <Esc>
 
+" Quick write
+nmap <leader>w :w<CR>
+
 " Yank entire line
 nmap Y y$
 
