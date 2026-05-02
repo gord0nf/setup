@@ -32,6 +32,8 @@
         "list": 
         [
             {
+                "backgroundImage": "desktopWallpaper",
+                "backgroundImageOpacity": 0.12,
                 "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
                 "font": 
                 {
@@ -41,7 +43,7 @@
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
                 "hidden": false,
                 "name": "Windows PowerShell",
-                "opacity": 90
+                "opacity": 100
             },
             {
                 "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
