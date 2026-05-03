@@ -1,56 +1,4 @@
-function Test-Binary()
-{
-  [OutputType([bool])]
-  param ([string]$Binary)
-  try
-  {
-    $cmd = Get-Command $Binary -ErrorAction SilentlyContinue
-    return ($null -ne $cmd)
-  } catch
-  { 
-    return $false 
-  }
-}
-
-function Push-ToPath()
-{
-  param(
-    [string[]]$Directories,
-    [switch]$AtStart
-  )
-  $ValidDirectories = $Directories | Where-Object { Test-Path $_ } | ForEach-Object { Resolve-Path $_ }
-  if ($env:PATH[-1] -ne ';')
-  {
-    $env:PATH += ';'
-  }
-  if ($AtStart)
-  {
-    $env:PATH = "$($ValidDirectories -Join ';');$env:PATH"
-  } else
-  {
-    $env:PATH += ($ValidDirectories -Join ';')
-  }
-}
-
-function Set-EnvironmentVars()
-{
-  param([hashtable]$EnvVariablePairs, [switch]$NotAPath)
-  foreach ($name in $EnvVariablePairs.Keys)
-  {
-    $value = $EnvVariablePairs[$name]
-    if (!$NotAPath -and (Test-Path $value -IsValid))
-    {
-      if (Test-Path $value)
-      {
-        $value = Resolve-Path $value
-      } else
-      { 
-        continue; 
-      }
-    }
-    Set-Item -Path "Env:$name" -Value "$value"
-  }
-}
+. "$PSScriptRoot/profile/utils.ps1"
 
 # Custom env variables ----------------------------------------------------------------------------
 
@@ -97,49 +45,7 @@ Push-ToPath @(
   "$env:ProgramFiles\PowerToys", "$env:LOCALAPPDATA\PowerToys" # PowerToys
 )
 
-# Web browser -------------------------------------------------------------------------------------
-
-function Get-WebBrowserDirectories()
-{
-  [OutputType([string[]])]
-  param ()
-
-  $PossibleBrowserLocations = @(
-    @(
-      { return (Get-ItemProperty 'HKLM:\SOFTWARE\Mozilla\Mozilla Firefox\*\Main').PathToExe },
-      "$env:ProgramFiles\Mozilla Firefox\", "${env:ProgramFiles(x86)}\Mozilla Firefox\", "$env:LOCALAPPDATA\Mozilla Firefox\"
-    ),
-    @(
-      { return (Get-ItemProperty 'HKLM:\SOFTWARE\Classes\ChromeHTML\shell\open\command')."(default)" -replace ' *--.*', '' },
-      "$env:ProgramFiles\Google\Chrome\Application\", "${env:ProgramFiles(x86)}\Google\Chrome\Application\", "$env:LOCALAPPDATA\Google\Chrome\Application\"
-    ),
-    @(
-      { return (Get-ItemProperty 'HKLM:\SOFTWARE\Classes\MSEdgeHTM\shell\open\command')."(default)" -replace ' *--.*', '' },
-      "$env:ProgramFiles\Microsoft\Edge\Application\", "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\", "$env:LOCALAPPDATA\Microsoft\Edge\Application\"
-    )
-  )
-
-  $BrowserLocations = $PossibleBrowserLocations | ForEach-Object {
-    foreach ($Location in $_)
-    {
-      if ($Location -is [scriptblock])
-      {
-        try
-        { $Location = $Location.Invoke() 
-        } catch
-        { continue 
-        }
-      }
-      if ($Location -and ($Location.Length -gt 0) -and (Test-Path "$Location"))
-      {
-        return $Location
-      }
-    }
-  }
-
-  return $BrowserLocations
-}
-
+# Web browsers
 Push-ToPath (Get-WebBrowserDirectories)
 
 # Java JDK ----------------------------------------------------------------------------------------
@@ -166,80 +72,6 @@ if (Test-Binary java)
   }
 }
 
-# Custom functions and aliases -------------------------------------------------------------------- 	
-	
-function Get-AllChildItems()
-{ Get-ChildItem -Force @args 
-} 	
-function Start-Explorer()
-{ 
-  param ( [string]$Path = '.' )
-  Start-Process $Path
-}
-function Invoke-BasicWebRequest()
-{ 
-  $save = $ProgressPreference
-  $ProgressPreference = 'SilentlyContinue' 
-  Invoke-WebRequest -UseBasicParsing @args
-  $ProgressPreference = $save
-}
-function Invoke-WebRequestToFile()
-{
-  param ( [string]$Uri )
-  Invoke-BasicWebRequest -Uri "$Uri" -O "$PWD\$([System.IO.Path]::GetFileName($Uri))" @args
-}
-function Get-DirectorySize()
-{
-  param ( [string]$Path )
-  return (Get-ChildItem -Path "$Path" -Recurse -File -Force | Measure-Object -Property Length -Sum).Sum
-}
-function New-Junction()
-{
-  param ( [string]$Path, [string]$Junction )
-  $Path = Resolve-Path "$Path"
-  $Junction = [System.IO.Path]::GetFullPath((Join-Path $pwd.Path $Junction))
-  cmd.exe /C "mklink /J ""$Junction"" ""$Path"""
-}
-function Expand-Msi()
-{ 	
-  param ( [string]$Path, [string]$Destination ) 	
-  $msiFull = (Get-Item $Path).FullName 	
-  $destFull = (Get-Item $Destination).FullName 	
-  cmd.exe /c "msiexec /a ""$msiFull"" /qb TARGETDIR=""$destFull""" 	
-} 	
-function Expand-Cab()
-{ 	
-  param( [string]$Path, [string]$Destination ) 	
-  expand.exe -F:* "$Path" "$Destination" 	
-} 	
-function Get-MissingDllDeps
-{
-  param ( [string[]]$dlls)
-  $dlls | ForEach-Object { 
-    cmd /c "dumpbin -dependents $(Split-Path -Leaf $_)" | 
-      Where-Object { $_.Contains(".dll") -and ! $_.Contains("Dump of file") } |
-      ForEach-Object { $_.Trim() } 
-    } |
-      Select-Object -Unique |
-      Where-Object { !(Test-Path $_) -and !(Get-Command -ErrorAction SilentlyContinue $_) }
-}
-	
-Set-Alias l Get-AllChildItems
-if (Test-Path Alias:cd)
-{ Remove-Item alias:cd 
-}
-function cd
-{
-  param([string]$path = $HOME)
-  Set-Location $path
-}
-Set-Alias e Start-Explorer
-Set-Alias zip Compress-Archive 	
-Set-Alias unzip Expand-Archive
-Set-Alias ffox firefox
-Set-Alias -Option AllScope curl Invoke-BasicWebRequest
-Set-Alias -Option AllScope wget Invoke-WebRequestToFile
-
 # Editors -----------------------------------------------------------------------------------------
 
 $PreferredEditors = @("code", "nvim", "vim", "notepad++", "notepad", "vi")
@@ -258,52 +90,8 @@ if ($env:EDITOR -like 'code*')
   $env:EDITOR += " --wait"
 }
 
-# Cool command prompt -----------------------------------------------------------------------------
+# The other important stuff -----------------------------------------------------------------------
 
-if (Test-Binary oh-my-posh)
-{
-  $ompConfig = "custom", "takuya", "half-life" | 
-    ForEach-Object { "$PSScriptRoot\..\ohmyposh\$_.omp.json" } |
-    Where-Object { Test-Path $_ } |
-    Select-Object -First 1
-  oh-my-posh init pwsh --config "$ompConfig" | Invoke-Expression
-}
-
-# Terminal icons ----------------------------------------------------------------------------------
-
-if (Get-Module Terminal-Icons -ListAvailable)
-{
-  Import-Module Terminal-Icons
-}
-
-# Change wallpaper --------------------------------------------------------------------------------
-
-Add-Type -TypeDefinition @"
-using System.Runtime.InteropServices;
-public class wallpaper
-{
- public const int SetDesktopWallpaper = 20;
- public const int UpdateIniFile = 0x01;
- public const int SendWinIniChange = 0x02;
- [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-  private static extern int SystemParametersInfo (int uAction, int uParam, string lpvParam, int fuWinIni);
- public static void SetWallpaper ( string path )
- {
-  SystemParametersInfo( SetDesktopWallpaper, 0, path, UpdateIniFile | SendWinIniChange );
- }
-}
-"@
-$ThemeDir = "$env:APPDATA\Microsoft\Windows\Themes"
-
-function Set-Wallpaper()
-{
-  param ( [string]$Path )
-  Remove-Item "$ThemeDir\TranscodedWallpaper" -ErrorAction SilentlyContinue
-  Copy-Item "$Path" "$ThemeDir\TranscodedWallpaper"
-  [wallpaper]::SetWallpaper("$Path") # Refresh wallpaper
-}
-
-function Set-RandomWallpaper()
-{
-  Set-Wallpaper "$(Get-ChildItem "$ThemeDir\wallpapers" | Select-Object -ExpandProperty FullName | Get-Random)"
-}
+. "$PSScriptRoot/profile/aliases.ps1"
+. "$PSScriptRoot/profile/prompt.ps1"
+. "$PSScriptRoot/profile/style.ps1"
