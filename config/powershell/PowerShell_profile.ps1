@@ -222,6 +222,12 @@ if (Test-Binary oh-my-posh) {
 	oh-my-posh init pwsh --config "$ompConfig" | Invoke-Expression
 }
 
+# Terminal icons ----------------------------------------------------------------------------------
+
+if (Get-Module Terminal-Icons -ListAvailable) {
+  Import-Module Terminal-Icons
+}
+
 # Change wallpaper --------------------------------------------------------------------------------
 
 Add-Type -TypeDefinition @"
