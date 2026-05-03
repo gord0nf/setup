@@ -93,5 +93,34 @@ if ($env:EDITOR -like 'code*')
 # The other important stuff -----------------------------------------------------------------------
 
 . "$PSScriptRoot/profile/aliases.ps1"
-. "$PSScriptRoot/profile/prompt.ps1"
-. "$PSScriptRoot/profile/style.ps1"
+
+# Load the rest async (credit: https://matt.kotsenas.com/posts/pwsh-profiling-async-startup/) -----
+
+[System.Collections.Queue]$__initQueue = @(
+  {
+    if (Test-Binary oh-my-posh)
+    {
+      $ompConfig = "custom", "takuya", "half-life" | 
+        ForEach-Object { "$PSScriptRoot/../ohmyposh/$_.omp.json" } |
+        Where-Object { Test-Path $_ } |
+        Select-Object -First 1
+      oh-my-posh init pwsh --config "$ompConfig" | Invoke-Expression
+    }
+  },
+  {
+    if (Get-Module Terminal-Icons -ListAvailable)
+    {
+      Import-Module Terminal-Icons -Global
+    }
+  }
+)
+
+Register-EngineEvent -SourceIdentifier PowerShell.OnIdle -SupportEvent -Action {
+    if ($__initQueue.Count -gt 0) {
+      & $__initQueue.Dequeue()
+    } else {
+      Unregister-Event -SubscriptionId $EventSubscriber.SubscriptionId -Force
+      Remove-Variable -Name '__initQueue' -Scope Global -Force
+      [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
+    }
+}
