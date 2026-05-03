@@ -18,7 +18,8 @@ command_exists powershell || fatal " ur on windows and don't have powershell... 
 
 # run setup script (modules, etc)
 log 'running setup script'
-powershell -NoProfile -Command "$CONFIG/Setup-Powershell.ps1"
+powershell -NoProfile -Command 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force'
+powershell -NoProfile "$CONFIG/Setup-Powershell.ps1"
 
 # link profile
 profile=$(convert_path_if_needed --unix "$(eval "powershell -NoProfile -Command 'Write-Host \$PROFILE'")")

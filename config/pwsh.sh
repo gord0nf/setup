@@ -16,6 +16,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 
 # run setup script (modules, etc)
 log 'running setup script'
+pwsh -NoProfile -Command 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force'
 pwsh -NoProfile "$CONFIG/Setup-Pwsh.ps1"
 
 # link profile
