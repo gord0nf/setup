@@ -3,11 +3,17 @@
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 HELP='usage: setup.sh [--config-only|-c] [--force|-f] [--all|-a] ...(things or setup scripts or presets)'
 
+# utils
+source "$SOFTWARE_ROOT/utils.sh" || {
+  echo "fatal: couldn't source utils" >&2
+  exit 1
+}
+
 # logging
 THING=software
 PREFIX_COLOR="\033[34m"
 PREFIX_FORMAT='%s:'
-. "$SOFTWARE_ROOT/log.sh"
+source "$SOFTWARE_ROOT/log.sh"
 
 # helper functions --------------------------------------------------------------------------------
 
@@ -155,8 +161,18 @@ while (($# > 0)); do
   esac
 done
 
+# create dir for installed things
 if ! [[ -d "$SOFTWARE_ROOT/installed" ]]; then
   mkdir "$SOFTWARE_ROOT/installed"
+fi
+
+# if windows, set shell-agnostic $SOFTWARE env var (needed for configs of some windows things)
+if [[ $(get_os) == windows ]] && command_exists powershell; then
+  powershell -NoProfile -Command "[System.Environment]::SetEnvironmentVariable(
+    'SOFTWARE',
+    '$(convert_path_if_needed --windows "$SOFTWARE_ROOT")',
+    [System.EnvironmentVariableTarget]::User
+  )" || warn "couldn't set SOFTWARE sys env var, some Windows things might be iffy"
 fi
 
 # run scripts -------------------------------------------------------------------------------------
