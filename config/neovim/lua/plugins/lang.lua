@@ -14,7 +14,7 @@ local merge_tables = require('utils').merge_tables
 local concat_tables = require('utils').concat_tables
 
 local aggregated_stuff = {
-  servers = {}, -- Table of { ls_name: ls_opts } for nvim-lsp
+  servers = {}, -- Table of { ls_name: ls_opts | func() -> ls_opts } for nvim-lsp
   plugins = {}, -- Array of Lazy plugins to install
   parsers = {}, -- Array of names of Treesitter parsers to install
   formatters_by_ft = {}, -- Table of { ft: formatters } for Conform
@@ -61,7 +61,7 @@ local plugins = {
       for server, server_opts in pairs(aggregated_stuff.servers) do
         if server_opts then
           server_opts = server_opts == true and {} or server_opts
-          if server_opts.mason ~= false and vim.tbl_contains(available, server) then
+          if (type(server_opts) ~= 'table' or server_opts.mason ~= false) and vim.tbl_contains(available, server) then
             ensure_installed[#ensure_installed + 1] = server
           end
         end
@@ -92,6 +92,10 @@ local plugins = {
     config = function()
       local blink = require('blink.cmp')
       for server, server_opts in pairs(aggregated_stuff.servers) do
+        if type(server_opts) == 'function' then
+          server_opts = server_opts()
+        end
+
         server_opts.capabilities = blink.get_lsp_capabilities(server_opts.capabilities or {})
         vim.lsp.config(server, server_opts)
         vim.lsp.enable(server)

@@ -1,14 +1,11 @@
-local mason = os.getenv('MASON')
-if not mason or #mason == 0 then
-  error('cannot get mason path')
-end
-
 return {
   servers = {
-    powershell_es = {
-      bundle_path = vim.fs.joinpath(mason, '/packages/powershell-editor-services'),
-      shell = vim.fn.executable('pwsh') and 'pwsh' or 'powershell.exe',
-    },
+    powershell_es = function()
+      return {
+        bundle_path = vim.fs.joinpath(os.getenv('MASON'), '/packages/powershell-editor-services'),
+        shell = vim.fn.executable('pwsh') and 'pwsh' or 'powershell.exe',
+      }
+    end,
   },
   parsers = { 'powershell' },
 }
