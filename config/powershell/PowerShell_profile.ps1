@@ -1,67 +1,86 @@
-function Test-Binary() {
-    [OutputType([bool])]
-    param ([string]$Binary)
-    try {
-        $cmd = Get-Command $Binary -ErrorAction SilentlyContinue
-        return ($cmd -ne $null)
-    }
-    catch { return $false }
+function Test-Binary()
+{
+  [OutputType([bool])]
+  param ([string]$Binary)
+  try
+  {
+    $cmd = Get-Command $Binary -ErrorAction SilentlyContinue
+    return ($null -ne $cmd)
+  } catch
+  { 
+    return $false 
+  }
 }
 
-function Push-ToPath() {
-    param(
-      [string[]]$Directories,
-      [switch]$AtStart
-    )
-    $ValidDirectories = $Directories | Where-Object { Test-Path $_ } | ForEach-Object { Resolve-Path $_ }
-    if ($env:PATH[-1] -ne ';') {
-        $env:PATH += ';'
-    }
-    if ($AtStart) {
-      $env:PATH = "$($ValidDirectories -Join ';');$env:PATH"
-    } else {
-      $env:PATH += ($ValidDirectories -Join ';')
-    }
+function Push-ToPath()
+{
+  param(
+    [string[]]$Directories,
+    [switch]$AtStart
+  )
+  $ValidDirectories = $Directories | Where-Object { Test-Path $_ } | ForEach-Object { Resolve-Path $_ }
+  if ($env:PATH[-1] -ne ';')
+  {
+    $env:PATH += ';'
+  }
+  if ($AtStart)
+  {
+    $env:PATH = "$($ValidDirectories -Join ';');$env:PATH"
+  } else
+  {
+    $env:PATH += ($ValidDirectories -Join ';')
+  }
 }
 
-function Set-EnvironmentVars() {
-    param([hashtable]$EnvVariablePairs, [switch]$NotAPath)
-    foreach ($name in $EnvVariablePairs.Keys) {
-        $value = $EnvVariablePairs[$name]
-        if (!$NotAPath -and (Test-Path $value -IsValid)) {
-          if (Test-Path $value) {
-            $value = Resolve-Path $value
-          } else { continue; }
-        }
-        Set-Item -Path "Env:$name" -Value "$value"
+function Set-EnvironmentVars()
+{
+  param([hashtable]$EnvVariablePairs, [switch]$NotAPath)
+  foreach ($name in $EnvVariablePairs.Keys)
+  {
+    $value = $EnvVariablePairs[$name]
+    if (!$NotAPath -and (Test-Path $value -IsValid))
+    {
+      if (Test-Path $value)
+      {
+        $value = Resolve-Path $value
+      } else
+      { 
+        continue; 
+      }
     }
+    Set-Item -Path "Env:$name" -Value "$value"
+  }
 }
 
 # Custom env variables ----------------------------------------------------------------------------
 
-$PROFILE = $PSCommandPath
-
 $powershellPath = (Get-Command pwsh -ErrorAction SilentlyContinue).Path
-if (($powershellPath -eq $null) -or !(Test-Path $powershellPath)) {
+if (($null -eq $powershellPath) -or !(Test-Path $powershellPath))
+{
   $powershellPath = (Get-Command powershell).Path
 }
 
 Set-EnvironmentVars @{
-    SOFTWARE = "$PSScriptRoot\..\.." #@gord0nf/software
-    REPOS    = "$HOME\dev\repos" # something i like
-    HIST     = (Get-PSReadLineOption).HistorySavePath
-    SHELL    = "$powershellPath"
+  SOFTWARE = "$PSScriptRoot\..\.." #@gord0nf/software
+  REPOS    = "$HOME\dev\repos" # something i like
+  HIST     = (Get-PSReadLineOption).HistorySavePath
+  SHELL    = "$powershellPath"
 }
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+  'PSAvoidAssignmentToAutomaticVariable', '', Justification='Overwriting $PROFILE')]
+$PROFILE = $PSCommandPath 
 $HIST = $env:HIST
 $SHELL = $env:SHELL
 
 # PATH --------------------------------------------------------------------------------------------
 
 # Register to path from software.csv
-if ($env:SOFTWARE.Length -gt 0) {
-  $SoftwareCsv = "$env:SOFTWARE\software.csv"
-  if (Test-Path "$SoftwareCsv") {
+if (![string]::IsNullOrEmpty($env:SOFTWARE))
+{
+  $SoftwareCsv = "$env:SOFTWARE/software.csv"
+  if (Test-Path "$SoftwareCsv")
+  {
     $paths = @()
     Import-Csv "$SoftwareCsv" | ForEach-Object {
       $paths += $_.paths -split '\|'
@@ -80,56 +99,67 @@ Push-ToPath @(
 
 # Web browser -------------------------------------------------------------------------------------
 
-function Get-WebBrowserDirectories() {
-    [OutputType([string[]])]
-    param ()
+function Get-WebBrowserDirectories()
+{
+  [OutputType([string[]])]
+  param ()
 
-    $PossibleBrowserLocations = @(
-        @(
-            { return (Get-ItemProperty 'HKLM:\SOFTWARE\Mozilla\Mozilla Firefox\*\Main').PathToExe },
-            "$env:ProgramFiles\Mozilla Firefox\", "${env:ProgramFiles(x86)}\Mozilla Firefox\", "$env:LOCALAPPDATA\Mozilla Firefox\"
-        ),
-        @(
-            { return (Get-ItemProperty 'HKLM:\SOFTWARE\Classes\ChromeHTML\shell\open\command')."(default)" -replace ' *--.*', '' },
-            "$env:ProgramFiles\Google\Chrome\Application\", "${env:ProgramFiles(x86)}\Google\Chrome\Application\", "$env:LOCALAPPDATA\Google\Chrome\Application\"
-        ),
-        @(
-            { return (Get-ItemProperty 'HKLM:\SOFTWARE\Classes\MSEdgeHTM\shell\open\command')."(default)" -replace ' *--.*', '' },
-            "$env:ProgramFiles\Microsoft\Edge\Application\", "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\", "$env:LOCALAPPDATA\Microsoft\Edge\Application\"
-        )
+  $PossibleBrowserLocations = @(
+    @(
+      { return (Get-ItemProperty 'HKLM:\SOFTWARE\Mozilla\Mozilla Firefox\*\Main').PathToExe },
+      "$env:ProgramFiles\Mozilla Firefox\", "${env:ProgramFiles(x86)}\Mozilla Firefox\", "$env:LOCALAPPDATA\Mozilla Firefox\"
+    ),
+    @(
+      { return (Get-ItemProperty 'HKLM:\SOFTWARE\Classes\ChromeHTML\shell\open\command')."(default)" -replace ' *--.*', '' },
+      "$env:ProgramFiles\Google\Chrome\Application\", "${env:ProgramFiles(x86)}\Google\Chrome\Application\", "$env:LOCALAPPDATA\Google\Chrome\Application\"
+    ),
+    @(
+      { return (Get-ItemProperty 'HKLM:\SOFTWARE\Classes\MSEdgeHTM\shell\open\command')."(default)" -replace ' *--.*', '' },
+      "$env:ProgramFiles\Microsoft\Edge\Application\", "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\", "$env:LOCALAPPDATA\Microsoft\Edge\Application\"
     )
+  )
 
-    $BrowserLocations = $PossibleBrowserLocations | ForEach-Object {
-        foreach ($Location in $_) {
-            if ($Location -is [scriptblock]) {
-                try { $Location = $Location.Invoke() }
-                catch { continue }
-            }
-            if ($Location -and ($Location.Length -gt 0) -and (Test-Path "$Location")) {
-                return $Location
-            }
+  $BrowserLocations = $PossibleBrowserLocations | ForEach-Object {
+    foreach ($Location in $_)
+    {
+      if ($Location -is [scriptblock])
+      {
+        try
+        { $Location = $Location.Invoke() 
+        } catch
+        { continue 
         }
+      }
+      if ($Location -and ($Location.Length -gt 0) -and (Test-Path "$Location"))
+      {
+        return $Location
+      }
     }
+  }
 
-    return $BrowserLocations
+  return $BrowserLocations
 }
 
 Push-ToPath (Get-WebBrowserDirectories)
 
 # Java JDK ----------------------------------------------------------------------------------------
 
-function Test-JavaHome() {
+function Test-JavaHome()
+{
   param ( [string]$Dir )
   $NotFoundDirs = "bin", "lib", "include" | Where-Object { !(Test-Path $(Join-Path "$Dir" "$_") -PathType Container) }
-  if ($NotFoundDirs.Length -gt 0) {
+  if ($NotFoundDirs.Length -gt 0)
+  {
     return $false
   }
   return Test-Path $(Join-Path "$Dir" "release") -PathType Leaf
 }
 
-if (Test-Binary java) {
+if (Test-Binary java)
+{
   $JavaHome = Resolve-Path "$(Split-Path -Parent (Get-Command java).Path)\.."
-  if (Test-JavaHome $JavaHome) {
+  if (Test-JavaHome $JavaHome)
+  {
     Set-EnvironmentVars @{
       JAVA_HOME = "$JavaHome"
     }
@@ -138,57 +168,70 @@ if (Test-Binary java) {
 
 # Custom functions and aliases -------------------------------------------------------------------- 	
 	
-function Get-AllChildItems() { Get-ChildItem -Force @args } 	
-function Start-Explorer() { 
+function Get-AllChildItems()
+{ Get-ChildItem -Force @args 
+} 	
+function Start-Explorer()
+{ 
   param ( [string]$Path = '.' )
   Start-Process $Path
 }
-function Invoke-BasicWebRequest() { 
+function Invoke-BasicWebRequest()
+{ 
   $save = $ProgressPreference
   $ProgressPreference = 'SilentlyContinue' 
   Invoke-WebRequest -UseBasicParsing @args
   $ProgressPreference = $save
 }
-function Invoke-WebRequestToFile() {
+function Invoke-WebRequestToFile()
+{
   param ( [string]$Uri )
   Invoke-BasicWebRequest -Uri "$Uri" -O "$PWD\$([System.IO.Path]::GetFileName($Uri))" @args
 }
-function Get-DirectorySize() {
-    param ( [string]$Path )
-    return (Get-ChildItem -Path "$Path" -Recurse -File -Force | Measure-Object -Property Length -Sum).Sum
+function Get-DirectorySize()
+{
+  param ( [string]$Path )
+  return (Get-ChildItem -Path "$Path" -Recurse -File -Force | Measure-Object -Property Length -Sum).Sum
 }
-function New-Junction() {
-    param ( [string]$Path, [string]$Junction )
-    $Path = Resolve-Path "$Path"
-    $Junction = [System.IO.Path]::GetFullPath((Join-Path $pwd.Path $Junction))
-    cmd.exe /C "mklink /J ""$Junction"" ""$Path"""
+function New-Junction()
+{
+  param ( [string]$Path, [string]$Junction )
+  $Path = Resolve-Path "$Path"
+  $Junction = [System.IO.Path]::GetFullPath((Join-Path $pwd.Path $Junction))
+  cmd.exe /C "mklink /J ""$Junction"" ""$Path"""
 }
-function Expand-Msi() { 	
-    param ( [string]$Path, [string]$Destination ) 	
-    $msiFull = (Get-Item $Path).FullName 	
-    $destFull = (Get-Item $Destination).FullName 	
-    cmd.exe /c "msiexec /a ""$msiFull"" /qb TARGETDIR=""$destFull""" 	
+function Expand-Msi()
+{ 	
+  param ( [string]$Path, [string]$Destination ) 	
+  $msiFull = (Get-Item $Path).FullName 	
+  $destFull = (Get-Item $Destination).FullName 	
+  cmd.exe /c "msiexec /a ""$msiFull"" /qb TARGETDIR=""$destFull""" 	
 } 	
-function Expand-Cab() { 	
-    param( [string]$Path, [string]$Destination ) 	
-    expand.exe -F:* "$Path" "$Destination" 	
+function Expand-Cab()
+{ 	
+  param( [string]$Path, [string]$Destination ) 	
+  expand.exe -F:* "$Path" "$Destination" 	
 } 	
-function Get-MissingDllDeps {
+function Get-MissingDllDeps
+{
   param ( [string[]]$dlls)
   $dlls | ForEach-Object { 
     cmd /c "dumpbin -dependents $(Split-Path -Leaf $_)" | 
       Where-Object { $_.Contains(".dll") -and ! $_.Contains("Dump of file") } |
       ForEach-Object { $_.Trim() } 
-  } |
-    Select-Object -Unique |
-    Where-Object { !(Test-Path $_) -and !(Get-Command -ErrorAction SilentlyContinue $_) }
+    } |
+      Select-Object -Unique |
+      Where-Object { !(Test-Path $_) -and !(Get-Command -ErrorAction SilentlyContinue $_) }
 }
 	
 Set-Alias l Get-AllChildItems
-if (Test-Path Alias:cd) { Remove-Item alias:cd }
-function cd {
-    param([string]$path = $HOME)
-    Set-Location $path
+if (Test-Path Alias:cd)
+{ Remove-Item alias:cd 
+}
+function cd
+{
+  param([string]$path = $HOME)
+  Set-Location $path
 }
 Set-Alias e Start-Explorer
 Set-Alias zip Compress-Archive 	
@@ -200,31 +243,36 @@ Set-Alias -Option AllScope wget Invoke-WebRequestToFile
 # Editors -----------------------------------------------------------------------------------------
 
 $PreferredEditors = @("code", "nvim", "vim", "notepad++", "notepad", "vi")
-foreach ($editor in $PreferredEditors) {
-    if (Test-Binary $editor) {
-        Set-EnvironmentVars @{ 
-            EDITOR = $editor
-        } -NotAPath
-        break
-    }
+foreach ($editor in $PreferredEditors)
+{
+  if (Test-Binary $editor)
+  {
+    Set-EnvironmentVars @{ 
+      EDITOR = $editor
+    } -NotAPath
+    break
+  }
 }
-if ($env:EDITOR -like 'code*') {
-    $env:EDITOR += " --wait"
+if ($env:EDITOR -like 'code*')
+{
+  $env:EDITOR += " --wait"
 }
 
 # Cool command prompt -----------------------------------------------------------------------------
 
-if (Test-Binary oh-my-posh) {
-	$ompConfig = "custom", "takuya", "half-life" | 
+if (Test-Binary oh-my-posh)
+{
+  $ompConfig = "custom", "takuya", "half-life" | 
     ForEach-Object { "$PSScriptRoot\..\ohmyposh\$_.omp.json" } |
     Where-Object { Test-Path $_ } |
     Select-Object -First 1
-	oh-my-posh init pwsh --config "$ompConfig" | Invoke-Expression
+  oh-my-posh init pwsh --config "$ompConfig" | Invoke-Expression
 }
 
 # Terminal icons ----------------------------------------------------------------------------------
 
-if (Get-Module Terminal-Icons -ListAvailable) {
+if (Get-Module Terminal-Icons -ListAvailable)
+{
   Import-Module Terminal-Icons
 }
 
@@ -247,13 +295,15 @@ public class wallpaper
 "@
 $ThemeDir = "$env:APPDATA\Microsoft\Windows\Themes"
 
-function Set-Wallpaper() {
+function Set-Wallpaper()
+{
   param ( [string]$Path )
   Remove-Item "$ThemeDir\TranscodedWallpaper" -ErrorAction SilentlyContinue
   Copy-Item "$Path" "$ThemeDir\TranscodedWallpaper"
   [wallpaper]::SetWallpaper("$Path") # Refresh wallpaper
 }
 
-function Random-Wallpaper() {
+function Set-RandomWallpaper()
+{
   Set-Wallpaper "$(Get-ChildItem "$ThemeDir\wallpapers" | Select-Object -ExpandProperty FullName | Get-Random)"
 }
