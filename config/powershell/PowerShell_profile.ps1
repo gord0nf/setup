@@ -105,6 +105,7 @@ if ($env:EDITOR -like 'code*')
         Where-Object { Test-Path $_ } |
         Select-Object -First 1
       oh-my-posh init pwsh --config "$ompConfig" | Invoke-Expression
+      [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
     }
   },
   {
@@ -116,11 +117,12 @@ if ($env:EDITOR -like 'code*')
 )
 
 Register-EngineEvent -SourceIdentifier PowerShell.OnIdle -SupportEvent -Action {
-    if ($__initQueue.Count -gt 0) {
-      & $__initQueue.Dequeue()
-    } else {
-      Unregister-Event -SubscriptionId $EventSubscriber.SubscriptionId -Force
-      Remove-Variable -Name '__initQueue' -Scope Global -Force
-      [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
-    }
+  if ($__initQueue.Count -gt 0)
+  {
+    & $__initQueue.Dequeue()
+  } else
+  {
+    Unregister-Event -SubscriptionId $EventSubscriber.SubscriptionId -Force
+    Remove-Variable -Name '__initQueue' -Scope Global -Force
+  }
 }
