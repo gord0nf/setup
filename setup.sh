@@ -74,6 +74,24 @@ load_preset() {
   done <"$preset_path"
 }
 
+# loads any changed software paths for $1 into $PATH
+load_software_csv() {
+  local thing=$1
+  if [[ -f "$SOFTWARE_ROOT/software.csv" ]]; then
+    local skip_headers=1
+    while IFS=, read -r name version paths; do
+      if ((skip_headers)); then
+        ((skip_headers--))
+      elif [[ "$name" == "$thing" ]]; then
+        local paths=${paths//|/ }
+        for path in "${paths[@]}"; do
+          export PATH="$PATH:$(convert_path_if_needed --unix "$path")"
+        done
+      fi
+    done <"$SOFTWARE_ROOT/software.csv"
+  fi
+}
+
 # parse args --------------------------------------------------------------------------------------
 
 manager=
@@ -200,6 +218,9 @@ for thing in "${things[@]}"; do
       continue
     }
   fi
+
+  # load any installed binaries (from software.csv) so they can be accessed in config script
+  load_software_csv "$thing"
 
   if [[ -e "$thing_config" ]]; then
     log "$thing: configuring"
