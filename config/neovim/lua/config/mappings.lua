@@ -52,6 +52,11 @@ vim.keymap.set('n', '<leader>pa', function()
   print('current:', path)
 end)
 
+-- Restart and open current file
+vim.keymap.set('n', '<leader>r', function()
+  vim.cmd('restart edit ' .. vim.fn.expand('%:.'))
+end, { desc = 'Restart and reopen file' })
+
 -- Ctrl backspace to delete word in insert mode
 -- vim.keymap.set("i", "<C->", "<Esc>dbi", { desc = "Delete word in Insert mode"})
 
