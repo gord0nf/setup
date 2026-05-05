@@ -28,17 +28,17 @@
     "defaults": {},
     "list": [
       {
-        "guid": "{61c54bbd-c2c6-5271-96e7-009a87af44bf}",
-        "name": "PowerShell Core",
-        "commandline": "%SOFTWARE%\\installed\\pwsh\\pwsh.exe",
-        "icon": "%SOFTWARE%\\installed\\pwsh\\assets\\powershell_128.png",
-        "hidden": false,
         "backgroundImage": "desktopWallpaper",
-        "backgroundImageOpacity": 0.12,
+        "backgroundImageOpacity": 0.14,
+        "commandline": "%SOFTWARE%\\installed\\pwsh\\pwsh.exe",
         "font": {
           "face": "JetBrainsMono Nerd Font",
           "size": 10
-        }
+        },
+        "guid": "{61c54bbd-c2c6-5271-96e7-009a87af44bf}",
+        "hidden": false,
+        "icon": "%SOFTWARE%\\installed\\pwsh\\assets\\powershell_128.png",
+        "name": "PowerShell Core"
       },
       {
         "backgroundImage": "desktopWallpaper",
@@ -87,3 +87,4 @@
   "schemes": [],
   "themes": []
 }
+
