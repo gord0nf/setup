@@ -130,17 +130,22 @@ namespace Wallpaper
 }
 "@
 $ThemeDir = "$env:APPDATA\Microsoft\Windows\Themes"
+$WallpaperThemes = Get-ChildItem "$ThemeDir\wallpapers" -Directory | Select-Object -ExpandProperty Name
 
 function Set-Wallpaper()
 {
   param ( [string]$Path )
   Remove-Item "$ThemeDir\TranscodedWallpaper" -ErrorAction SilentlyContinue
   Copy-Item "$Path" "$ThemeDir\TranscodedWallpaper"
-  [Wallpaper.Setter]::SetWallpaper("$(Resolve-Path "$Path"")", 1) # Refresh wallpaper
+  [Wallpaper.Setter]::SetWallpaper("$(Resolve-Path "$Path")", 1) # Refresh wallpaper
 }
 
 function Set-RandomWallpaper()
 {
-  Set-Wallpaper "$(Get-ChildItem "$ThemeDir\wallpapers" | Select-Object -ExpandProperty FullName | Get-Random)"
+  param (
+    [ValidateScript({$_ -in $WallpaperThemes })]
+    [string]$Theme = ($WallpaperThemes | Get-Random)
+  )
+  Set-Wallpaper "$(Get-ChildItem "$ThemeDir\wallpapers\$Theme" | Select-Object -ExpandProperty FullName | Get-Random)"
 }
 
