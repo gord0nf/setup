@@ -110,6 +110,7 @@ return {
     'folke/flash.nvim',
     event = 'VeryLazy',
     opts = {
+      jump = { inclusive = true },
       modes = {
         char = { jump_labels = true },
       },
