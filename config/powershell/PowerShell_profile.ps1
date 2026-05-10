@@ -109,6 +109,10 @@ if ($env:EDITOR -like 'code*')
     }
   },
   {
+    . "$PSScriptRoot/profile/console.ps1"
+    [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
+  }
+  {
     if (Get-Module Terminal-Icons -ListAvailable)
     {
       Import-Module Terminal-Icons -Global
