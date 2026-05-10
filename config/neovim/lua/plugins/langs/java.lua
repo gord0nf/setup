@@ -45,6 +45,11 @@ return {
           configuration = {
             runtimes = { default_runtime },
           },
+          format = {
+            settings = {
+              lineEnding = 'lf',
+            },
+          },
         },
       },
     },
