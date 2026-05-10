@@ -28,7 +28,7 @@
     "defaults": {},
     "list": [
       {
-        "backgroundImage": "desktopWallpaper",
+        "backgroundImage": "%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper",
         "backgroundImageOpacity": 0.14,
         "commandline": "%SOFTWARE%\\installed\\pwsh\\pwsh.exe",
         "font": {
@@ -87,4 +87,3 @@
   "schemes": [],
   "themes": []
 }
-
