@@ -33,6 +33,7 @@ function cd
   Set-Location $path
 }
 Set-Alias e Start-Explorer
+Set-Alias clip Set-Clipboard
 
 # Network calls -----------------------------------------------------------------------------------
 
