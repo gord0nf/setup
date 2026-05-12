@@ -72,6 +72,12 @@ if (Test-Binary java)
   }
 }
 
+# Prettier config ---------------------------------------------------------------------------------
+
+Set-EnvironmentVars @{
+  PRETTIERD_DEFAULT_CONFIG = "$env:SOFTWARE/config/nodejs/prettierrc.json"
+}
+
 # Editors -----------------------------------------------------------------------------------------
 
 $PreferredEditors = @("code", "nvim", "vim", "notepad++", "notepad", "vi")

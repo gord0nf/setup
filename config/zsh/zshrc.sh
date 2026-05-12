@@ -35,6 +35,10 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#663399,standout"
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE="20"
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 
+# prettier ----------------------------------------------------------------------------------------
+
+PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/nodejs/prettierrc.json"
+
 # -------------------------------------------------------------------------------------------------
 
 source "$ZSH_CONFIG/aliases.sh"

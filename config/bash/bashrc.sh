@@ -36,6 +36,10 @@ if command_exists oh-my-posh; then
   done
 fi
 
+# prettier ----------------------------------------------------------------------------------------
+
+PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/nodejs/prettierrc.json"
+
 # -------------------------------------------------------------------------------------------------
 
 source "$BASH_CONFIG/aliases.sh"
