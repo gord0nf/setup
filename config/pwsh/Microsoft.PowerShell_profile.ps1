@@ -9,7 +9,7 @@ if (($null -eq $powershellPath) -or !(Test-Path $powershellPath))
 }
 
 Set-EnvironmentVars @{
-  SOFTWARE = "$PSScriptRoot\..\.." #@gord0nf/software
+  SOFTWARE = "$((Get-Item -Path $PSScriptRoot).Target)\..\.." #@gord0nf/software
   REPOS    = "$HOME\dev\repos" # something i like
   HIST     = (Get-PSReadLineOption).HistorySavePath
   SHELL    = "$powershellPath"
@@ -104,10 +104,10 @@ if ($env:EDITOR -like 'code*')
 
 [System.Collections.Queue]$__initQueue = @(
   {
-    if (Test-Binary oh-my-posh)
+    if ((Test-Binary oh-my-posh) -and $env:SOFTWARE)
     {
       $ompConfig = "custom", "takuya", "half-life" | 
-        ForEach-Object { "$PSScriptRoot/../ohmyposh/$_.omp.json" } |
+        ForEach-Object { "$env:SOFTWARE/config/ohmyposh/$_.omp.json" } |
         Where-Object { Test-Path $_ } |
         Select-Object -First 1
       oh-my-posh init pwsh --config "$ompConfig" | Invoke-Expression
