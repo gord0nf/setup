@@ -1,29 +1,22 @@
 . "$PSScriptRoot/profile/utils.ps1"
 
-# Custom env variables ----------------------------------------------------------------------------
+# Env vars ----------------------------------------------------------------------------------------
 
 Set-EnvironmentVars @{
   SOFTWARE = "$((Get-Item -Path $PSScriptRoot).Target)\..\.." #@gord0nf/software
   HIST     = (Get-PSReadLineOption).HistorySavePath
   SHELL    = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
 }
-
 $HIST = $env:HIST
 $SHELL = $env:SHELL
 
-# PATH --------------------------------------------------------------------------------------------
+# Path --------------------------------------------------------------------------------------------
 
 # Register to path from software.csv
-if (![string]::IsNullOrEmpty($env:SOFTWARE)) {
-  $SoftwareCsv = "$env:SOFTWARE/software.csv"
-  if (Test-Path "$SoftwareCsv") {
-    $paths = @()
-    Import-Csv "$SoftwareCsv" | ForEach-Object {
-      $paths += $_.paths -split '\|'
-    }
-    Push-ToPath $paths -AtStart
-  }
-}
+Push-ToPath -AtStart (
+  Import-Csv "$env:SOFTWARE/software.csv" -ErrorAction SilentlyContinue |
+    ForEach-Object { $_.paths -split '\|'}
+)
 
 # Some edge cases to check for
 Push-ToPath @(
@@ -37,46 +30,18 @@ Push-ToPath @(
 # Web browsers
 Push-ToPath (Get-WebBrowserDirectories)
 
-# Java JDK ----------------------------------------------------------------------------------------
+# Misc software -----------------------------------------------------------------------------------
 
-function Test-JavaHome() {
-  param ( [string]$Dir )
-  $NotFoundDirs = "bin", "lib", "include" | Where-Object { !(Test-Path $(Join-Path "$Dir" "$_") -PathType Container) }
-  if ($NotFoundDirs.Length -gt 0) {
-    return $false
-  }
-  return Test-Path $(Join-Path "$Dir" "release") -PathType Leaf
-}
+Set-EnvironmentVars @{ 
+  EDITOR = "code", "nvim", "vim", "notepad++", "notepad", "vi" | 
+    Where-Object { Test-Binary $_ } |
+    Select-Object -First 1
+} -NotAPath
 
 if (Test-Binary java) {
-  $JavaHome = Resolve-Path "$(Split-Path -Parent (Get-Command java).Path)\.."
-  if (Test-JavaHome $JavaHome) {
-    Set-EnvironmentVars @{
-      JAVA_HOME = "$JavaHome"
-    }
-  }
+  Set-EnvironmentVars @{ JAVA_HOME = "$(Split-Path (Get-Command java).Path)/.." }
 }
-
-# Prettier config ---------------------------------------------------------------------------------
-
-Set-EnvironmentVars @{
-  PRETTIERD_DEFAULT_CONFIG = "$env:SOFTWARE/config/nodejs/prettierrc.json"
-}
-
-# Editors -----------------------------------------------------------------------------------------
-
-$PreferredEditors = @("code", "nvim", "vim", "notepad++", "notepad", "vi")
-foreach ($editor in $PreferredEditors) {
-  if (Test-Binary $editor) {
-    Set-EnvironmentVars @{ 
-      EDITOR = $editor
-    } -NotAPath
-    break
-  }
-}
-if ($env:EDITOR -like 'code*') {
-  $env:EDITOR += " --wait"
-}
+Set-EnvironmentVars @{ PRETTIERD_DEFAULT_CONFIG = "$env:SOFTWARE/config/nodejs/prettierrc.json" }
 
 # Aliases -----------------------------------------------------------------------------------------
 
@@ -116,7 +81,6 @@ Set-Alias ffox firefox
   },
   {
     . "$PSScriptRoot/profile/console.ps1"
-    [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
   }
   {
     if (Get-Module Terminal-Icons -ListAvailable) {
