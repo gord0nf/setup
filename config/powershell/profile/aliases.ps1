@@ -47,7 +47,8 @@ function Invoke-BasicWebRequest()
 function Invoke-WebRequestToFile()
 {
   param ( [string]$Uri )
-  Invoke-BasicWebRequest -Uri "$Uri" -O "$PWD\$([System.IO.Path]::GetFileName($Uri))" @args
+  $filename = [System.IO.Path]::GetFileName(([uri]$Uri).LocalPath)
+  Invoke-BasicWebRequest -Uri "$Uri" -Outfile "$PWD\$filename" @args
 }
 	
 Set-Alias -Option AllScope curl Invoke-BasicWebRequest
