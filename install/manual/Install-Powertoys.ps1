@@ -5,47 +5,38 @@ param(
 
 $ProgressPreference = 'SilentlyContinue'
 
-function Test-Installed()
-{
+function Test-Installed() {
   $possiblePaths = "$env:ProgramFiles\PowerToys", "$env:LOCALAPPDATA\PowerToys" 
-  foreach ($path in $possiblePaths)
-  {
-    if (Test-Path $path -PathType Container)
-    {
+  foreach ($path in $possiblePaths) {
+    if (Test-Path $path -PathType Container) {
       return $true
     }
   }
   return $false
 }
 
-function Get-VersionTag()
-{
+function Get-VersionTag() {
   $releaseInfo = `
     Invoke-WebRequest -UseBasicParsing "https://api.github.com/repos/microsoft/PowerToys/releases/latest" `
   | ConvertFrom-Json
   return $releaseInfo.tag_name
 }
 
-function Get-DownloadUrl()
-{
+function Get-DownloadUrl() {
   param ( [string]$ReleaseTag )
   $version = $ReleaseTag.Substring(1)
   $url = "https://github.com/microsoft/PowerToys/releases/download/$ReleaseTag/"
-  if ($env:PROCESSOR_ARCHITECTURE -eq "Arm64")
-  {
+  if ($env:PROCESSOR_ARCHITECTURE -eq "Arm64") {
     $url += "PowerToysUserSetup-$version-arm64.exe"
-  } else
-  {
+  } else {
     $url += "PowerToysUserSetup-$version-x64.exe"
   }
   return $url
 }
 
-if (!$Force -and (Test-Installed))
-{
+if (!$Force -and (Test-Installed)) {
   Write-Host "[powertoys] already installed"
-} else
-{
+} else {
   Write-Host "[powertoys] getting latest release tag"
   $tag = Get-VersionTag
   $url = Get-DownloadUrl $tag

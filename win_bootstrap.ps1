@@ -27,37 +27,30 @@ EnablePseudoConsoleSupport=Disabled
 EnableFSMonitor=Disabled
 "@
 
-function Get-VersionTag()
-{
+function Get-VersionTag() {
   $releaseInfo = `
     Invoke-WebRequest -UseBasicParsing "https://api.github.com/repos/git-for-windows/git/releases/latest" `
   | ConvertFrom-Json
   return $releaseInfo.tag_name
 }
 
-function Get-DownloadUrl($Version)
-{
-  if ($Version -match "^v(\d+\.\d+\.\d+)\.windows.*$")
-  {
+function Get-DownloadUrl($Version) {
+  if ($Version -match "^v(\d+\.\d+\.\d+)\.windows.*$") {
     $versionNumber = $Matches[1]
-    if ($Version -like '*.2')
-    {
+    if ($Version -like '*.2') {
       $versionNumber += '.2'
     }
     $arch = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
     return "https://github.com/git-for-windows/git/releases/download/$Version/Git-$versionNumber-$arch.exe"
-  } else
-  {
+  } else {
     throw "Couldn't parse version number from tag"
     exit 1
   }
 }
 
-if (!$Force -and (Get-Command bash -ErrorAction SilentlyContinue))
-{
+if (!$Force -and (Get-Command bash -ErrorAction SilentlyContinue)) {
   Write-Host '[bootstrap] bash is already installed'
-} else
-{
+} else {
   Write-Host '[bootstrap] get Git for Windows version'
   $version = Get-VersionTag
   $url = Get-DownloadUrl $version

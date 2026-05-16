@@ -14,11 +14,9 @@ $SHELL = $env:SHELL
 # PATH --------------------------------------------------------------------------------------------
 
 # Register to path from software.csv
-if (![string]::IsNullOrEmpty($env:SOFTWARE))
-{
+if (![string]::IsNullOrEmpty($env:SOFTWARE)) {
   $SoftwareCsv = "$env:SOFTWARE/software.csv"
-  if (Test-Path "$SoftwareCsv")
-  {
+  if (Test-Path "$SoftwareCsv") {
     $paths = @()
     Import-Csv "$SoftwareCsv" | ForEach-Object {
       $paths += $_.paths -split '\|'
@@ -41,22 +39,18 @@ Push-ToPath (Get-WebBrowserDirectories)
 
 # Java JDK ----------------------------------------------------------------------------------------
 
-function Test-JavaHome()
-{
+function Test-JavaHome() {
   param ( [string]$Dir )
   $NotFoundDirs = "bin", "lib", "include" | Where-Object { !(Test-Path $(Join-Path "$Dir" "$_") -PathType Container) }
-  if ($NotFoundDirs.Length -gt 0)
-  {
+  if ($NotFoundDirs.Length -gt 0) {
     return $false
   }
   return Test-Path $(Join-Path "$Dir" "release") -PathType Leaf
 }
 
-if (Test-Binary java)
-{
+if (Test-Binary java) {
   $JavaHome = Resolve-Path "$(Split-Path -Parent (Get-Command java).Path)\.."
-  if (Test-JavaHome $JavaHome)
-  {
+  if (Test-JavaHome $JavaHome) {
     Set-EnvironmentVars @{
       JAVA_HOME = "$JavaHome"
     }
@@ -72,41 +66,34 @@ Set-EnvironmentVars @{
 # Editors -----------------------------------------------------------------------------------------
 
 $PreferredEditors = @("code", "nvim", "vim", "notepad++", "notepad", "vi")
-foreach ($editor in $PreferredEditors)
-{
-  if (Test-Binary $editor)
-  {
+foreach ($editor in $PreferredEditors) {
+  if (Test-Binary $editor) {
     Set-EnvironmentVars @{ 
       EDITOR = $editor
     } -NotAPath
     break
   }
 }
-if ($env:EDITOR -like 'code*')
-{
+if ($env:EDITOR -like 'code*') {
   $env:EDITOR += " --wait"
 }
 
 # Aliases -----------------------------------------------------------------------------------------
 
-function Get-AllChildItems
-{
+function Get-AllChildItems {
   Get-ChildItem -Force @args 
 }
 Set-Alias l Get-AllChildItems
-if (Test-Path Alias:cd)
-{ 
+if (Test-Path Alias:cd) { 
   Remove-Item alias:cd 
 }
-function cd
-{
+function cd {
   param([string]$path = $HOME)
   Set-Location $path
 }
 Set-Alias e Start-Explorer
 Set-Alias clip Set-Clipboard
-if (-not (Test-Binary curl))
-{
+if (-not (Test-Binary curl)) {
   Set-Alias curl Invoke-BasicWebRequest
 }
 Set-Alias wget Invoke-WebRequestToFile
@@ -118,8 +105,7 @@ Set-Alias ffox firefox
 
 [System.Collections.Queue]$__initQueue = @(
   {
-    if ((Test-Binary oh-my-posh) -and $env:SOFTWARE)
-    {
+    if ((Test-Binary oh-my-posh) -and $env:SOFTWARE) {
       $ompConfig = "custom", "takuya", "half-life" | 
         ForEach-Object { "$env:SOFTWARE/config/ohmyposh/$_.omp.json" } |
         Where-Object { Test-Path $_ } |
@@ -133,19 +119,16 @@ Set-Alias ffox firefox
     [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
   }
   {
-    if (Get-Module Terminal-Icons -ListAvailable)
-    {
+    if (Get-Module Terminal-Icons -ListAvailable) {
       Import-Module Terminal-Icons -Global
     }
   }
 )
 
 Register-EngineEvent -SourceIdentifier PowerShell.OnIdle -SupportEvent -Action {
-  if ($__initQueue.Count -gt 0)
-  {
+  if ($__initQueue.Count -gt 0) {
     & $__initQueue.Dequeue()
-  } else
-  {
+  } else {
     Unregister-Event -SubscriptionId $EventSubscriber.SubscriptionId -Force
     Remove-Variable -Name '__initQueue' -Scope Global -Force
   }

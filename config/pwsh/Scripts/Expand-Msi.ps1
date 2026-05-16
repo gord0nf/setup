@@ -1,7 +1,6 @@
 param ( [string]$Path, [string]$Destination ) 	
 
-if (-not $IsWindows)
-{
+if (-not $IsWindows) {
   throw "This script is only supported on Windows."
 }
 
