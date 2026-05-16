@@ -16,16 +16,18 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 
 ! $force && ! command_exists $THING && fatal 'not installed'
 
+# link config dir
+profile=$(eval "$THING -NoProfile -Command 'Write-Host \$PROFILE'")
+powershell_dir=$(dirname "$(convert_path_if_needed --unix "$profile")")
+log "creating dir link from '$powershell_dir' to config"
+make_directory_link "$CONFIG" "$powershell_dir" $force
+
+# bootstrap if Windows Powershell
+[[ $THING == powershell ]] && {
+  log 'bootstrapping Windows Powershell'
+  powershell -ExecutionPolicy RemoteSigned -NoProfile "$CONFIG/setup/Bootstrap-WindowsPowershell.ps1"
+}
+
 # run setup script (modules, etc)
 log 'running setup script'
 $THING -ExecutionPolicy RemoteSigned -NoProfile "$CONFIG/setup/Setup-Powershell.ps1"
-
-# link profile
-profile=$(convert_path_if_needed --unix "$(eval "$THING -NoProfile -Command 'Write-Host \$PROFILE'")")
-if ! [[ -f "$profile" ]]; then
-  warn "PS profile file doesn't exist, so creating: $profile"
-  mkdir -p "$(dirname "$profile")" && touch "$profile"
-fi
-log "making sure '$profile' sources config"
-sed -i '/#@gord0nf\/software/d' "$profile" &>/dev/null # clean all lines with special comment
-echo ". '$(convert_path_if_needed --windows "$CONFIG/PowerShell_profile.ps1")' #@gord0nf/software" >>"$profile"

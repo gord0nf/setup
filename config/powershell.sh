@@ -15,8 +15,5 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 os=$(get_os)
 [[ "$os" == 'windows' ]] || fatal "powershell is for windows (os=$os)"
 
-log 'bootstrapping Windows Powershell'
-powershell -ExecutionPolicy RemoteSigned -NoProfile "$CONFIG/setup/Bootstrap-WindowsPowershell.ps1"
-
 # actual config logic is the same as Powershell Core
 . "$(dirname "${BASH_SOURCE[0]}")/pwsh.sh"

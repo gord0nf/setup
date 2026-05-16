@@ -9,3 +9,6 @@ software.csv
 
 # winterm
 config/winterm/state.json
+
+# powershell
+config/pwsh/Modules
