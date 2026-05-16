@@ -29,6 +29,7 @@ if (![string]::IsNullOrEmpty($env:SOFTWARE))
 
 # Some edge cases to check for
 Push-ToPath @(
+  "$PSScriptRoot/Scripts",
   "C:\Windows\Microsoft.NET\Framework\v4.0.30319\",            # DOTNET C#
   "C:\desktopVS\VC\Tools\MSVC\14.44.35207\bin\Hostx86\x86\",   # MSVC C/C++
   "C:\eclipse",                                                # Eclipse IDE
@@ -86,11 +87,34 @@ if ($env:EDITOR -like 'code*')
   $env:EDITOR += " --wait"
 }
 
-# The other important stuff -----------------------------------------------------------------------
+# Aliases -----------------------------------------------------------------------------------------
 
-. "$PSScriptRoot/profile/aliases.ps1"
+function Get-AllChildItems
+{
+  Get-ChildItem -Force @args 
+}
+Set-Alias l Get-AllChildItems
+if (Test-Path Alias:cd)
+{ 
+  Remove-Item alias:cd 
+}
+function cd
+{
+  param([string]$path = $HOME)
+  Set-Location $path
+}
+Set-Alias e Start-Explorer
+Set-Alias clip Set-Clipboard
+if (-not (Test-Binary curl))
+{
+  Set-Alias curl Invoke-BasicWebRequest
+}
+Set-Alias wget Invoke-WebRequestToFile
+Set-Alias zip Compress-Archive 	
+Set-Alias unzip Expand-Archive
+Set-Alias ffox firefox
 
-# Load the rest async (credit: https://matt.kotsenas.com/posts/pwsh-profiling-async-startup/) -----
+# Load the rest async (https://matt.kotsenas.com/posts/pwsh-profiling-async-startup/) -------------
 
 [System.Collections.Queue]$__initQueue = @(
   {
