@@ -1,7 +1,13 @@
 #!/bin/bash
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-HELP='usage: setup.sh [--config-only|-c] [--force|-f] [--all|-a] ...(things or setup scripts or presets)'
+HELP=$'usage: setup.sh [opts] ...(things or setup scripts or presets)
+
+options:
+ -m, --manager <mgr> run install script using a specific manager, defaults to first available
+ -c, --config-only   only run the config script for the things
+ -f, --force         runs install/config scripts even if already installed/configed and doesn\'t ask before overwriting stuff
+ -a, --all           runs scripts for anything that can be installed with the manager used'
 
 # utils
 source "$SOFTWARE_ROOT/utils.sh" || {
@@ -117,6 +123,7 @@ done
 
 # if not specified, use first usable manager
 if [[ -z "$manager" ]]; then
+  log "no manager specified, defaulting to one"
   for manager_script in $(ls "$SOFTWARE_ROOT/managers/"*.sh); do
     [[ "$manager_script" == */manual.sh ]] && continue # save manual for last
     manager_script=$(
@@ -129,7 +136,6 @@ if [[ -z "$manager" ]]; then
     }
   done
   [[ -z "$manager" ]] && set_manager manual
-  log "no manager specified, defaulting to $manager"
 fi
 
 while (($# > 0)); do
@@ -195,6 +201,7 @@ fi
 
 # run scripts -------------------------------------------------------------------------------------
 
+log "using '$manager' manager"
 source "$SOFTWARE_ROOT/managers/$manager.sh"
 manager_can_use || fatal "cannot use $manager manager on your system"
 
@@ -202,7 +209,12 @@ for cmd in "${pre_commands[@]}"; do
   eval "$cmd" || fatal 'precommand failed'
 done
 
-command_exists manager_preinstall && manager_preinstall
+command_exists manager_preinstall && {
+  log 'running manager preinstall script'
+  manager_preinstall
+}
+
+echo # style
 
 for thing in "${things[@]}"; do
   [[ "$thing" != "${things[0]}" ]] && echo # separation line
