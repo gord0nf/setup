@@ -2,22 +2,12 @@
 
 # Custom env variables ----------------------------------------------------------------------------
 
-$powershellPath = (Get-Command pwsh -ErrorAction SilentlyContinue).Path
-if (($null -eq $powershellPath) -or !(Test-Path $powershellPath))
-{
-  $powershellPath = (Get-Command powershell).Path
-}
-
 Set-EnvironmentVars @{
   SOFTWARE = "$((Get-Item -Path $PSScriptRoot).Target)\..\.." #@gord0nf/software
-  REPOS    = "$HOME\dev\repos" # something i like
   HIST     = (Get-PSReadLineOption).HistorySavePath
-  SHELL    = "$powershellPath"
+  SHELL    = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
 }
 
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute(
-  'PSAvoidAssignmentToAutomaticVariable', '', Justification='Overwriting $PROFILE')]
-$PROFILE = $PSCommandPath 
 $HIST = $env:HIST
 $SHELL = $env:SHELL
 
