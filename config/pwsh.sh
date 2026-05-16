@@ -5,21 +5,23 @@ if [[ "$1" == '--force' ]]; then
   force=true
 fi
 
-THING=pwsh
+# supports being called from config/powershell.sh
+[[ "$THING" == powershell ]] || THING=pwsh
+
 CONFIG="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/pwsh"
 source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
   echo "fatal: couldn't source utils" >&2
   exit 1
 }
 
-! $force && ! command_exists pwsh && fatal 'not installed'
+! $force && ! command_exists $THING && fatal 'not installed'
 
 # run setup script (modules, etc)
 log 'running setup script'
-pwsh -ExecutionPolicy RemoteSigned -NoProfile "$CONFIG/Setup-Pwsh.ps1"
+$THING -ExecutionPolicy RemoteSigned -NoProfile "$CONFIG/setup/Setup-Powershell.ps1"
 
 # link profile
-profile=$(convert_path_if_needed --unix "$(eval "pwsh -NoProfile -Command 'Write-Host \$PROFILE'")")
+profile=$(convert_path_if_needed --unix "$(eval "$THING -NoProfile -Command 'Write-Host \$PROFILE'")")
 if ! [[ -f "$profile" ]]; then
   warn "PS profile file doesn't exist, so creating: $profile"
   mkdir -p "$(dirname "$profile")" && touch "$profile"

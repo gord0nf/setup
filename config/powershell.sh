@@ -14,18 +14,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 
 os=$(get_os)
 [[ "$os" == 'windows' ]] || fatal "powershell is for windows (os=$os)"
-command_exists powershell || fatal " ur on windows and don't have powershell... that ain't right"
 
-# run setup script (modules, etc)
-log 'running setup script'
-powershell -ExecutionPolicy RemoteSigned -NoProfile "$CONFIG/Setup-Powershell.ps1"
+log 'bootstrapping Windows Powershell'
+powershell -ExecutionPolicy RemoteSigned -NoProfile "$CONFIG/setup/Bootstrap-WindowsPowershell.ps1"
 
-# link profile
-profile=$(convert_path_if_needed --unix "$(eval "powershell -NoProfile -Command 'Write-Host \$PROFILE'")")
-if ! [[ -f "$profile" ]]; then
-  warn "PS profile file doesn't exist, so creating: $profile"
-  mkdir -p "$(dirname "$profile")" && touch "$profile"
-fi
-log "making sure '$profile' sources config"
-sed -i '/#@gord0nf\/software/d' "$profile" &>/dev/null # clean all lines with special comment
-echo ". '$(convert_path_if_needed --windows "$CONFIG/PowerShell_profile.ps1")' #@gord0nf/software" >>"$profile"
+# actual config logic is the same as Powershell Core
+. "$(dirname "${BASH_SOURCE[0]}")/pwsh.sh"
