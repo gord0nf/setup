@@ -11,4 +11,9 @@ software.csv
 config/winterm/state.json
 
 # powershell
-config/pwsh/Modules
+config/pwsh/Modules/Microsoft.PowerShell.PSResourceGet
+config/pwsh/Modules/PackageManagement
+config/pwsh/Modules/PowerShellGet
+config/pwsh/Modules/PSReadLine
+config/pwsh/Modules/Terminal-Icons
+config/pwsh/Modules/Fonts
