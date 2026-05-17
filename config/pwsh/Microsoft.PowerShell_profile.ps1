@@ -125,6 +125,7 @@ Set-Alias ffox firefox
         BellStyle = "None"
         PredictionSource = "History"
         MaximumHistoryCount = 10000
+        PredictionViewStyle  = "ListView"
 
         # History filtering
         AddToHistoryHandler = {
