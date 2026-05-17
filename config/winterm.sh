@@ -28,4 +28,4 @@ done
 [[ -z "$settings_dir" ]] && fatal 'could not find wt settings dir'
 
 log "creating directory link from '$settings_dir' to config"
-make_directory_link "$CONFIG" "$settings_dir" $FORCE
+make_directory_link "$CONFIG" "$settings_dir"

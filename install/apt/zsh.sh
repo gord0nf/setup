@@ -30,7 +30,7 @@ ZSH="$install_dir" sh -c "$install_script" '' --unattended && {
 
   # make dir link to standard oh-my-zsh location in home
   log "creating directory link from ~/.oh-my-zsh to '$install_dir'"
-  make_directory_link "$install_dir" "$HOME/.oh-my-zsh" $FORCE
+  make_directory_link "$install_dir" "$HOME/.oh-my-zsh"
 
   # install basic plugins
   log 'installing zsh-autoseggestions'

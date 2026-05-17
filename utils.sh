@@ -88,13 +88,10 @@ convert_path_if_needed() {
 make_directory_link() {
   local actual=$(convert_path_if_needed --unix "$1")
   local link=$(convert_path_if_needed --unix "$2")
-  local force=false
-  if [[ "$3" == true ]]; then
-    force=true
-  fi
+  FORCE="${FORCE:-false}"
 
   if item_exists "$link"; then
-    if ! $force; then
+    if ! $FORCE; then
       echo "mklink: something's already at link '$link'"
       read -p "mklink: want to replace it? (y/n) [n] " yn
       case $yn in
@@ -180,12 +177,9 @@ atomic_download_and_extract() {
   local outdir=$2
   local tmpoutdir="$(dirname "$outdir")/unfinished_$(basename "$outdir")"
   local archive_type=$3 # "zip" | "tar"; optional, falls back to url filename
-  local force=false
-  if [[ "$4" == true ]]; then
-    force=true
-  fi
+  FORCE="${FORCE:-false}"
 
-  if item_exists "$outdir" && ! $force; then
+  if item_exists "$outdir" && ! $FORCE; then
     echo "extract: something's already at outdir '$outdir'"
     read -p "extract: want to replace it? (y/n) [n] " yn
     case $yn in

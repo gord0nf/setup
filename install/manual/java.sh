@@ -43,7 +43,7 @@ if ! $FORCE && command_exists java; then
   log 'already installed'
 else
   log 'installing Oracle JDK'
-  atomic_download_and_extract "$(get_download_url)" "$install_dir" '' $FORCE ||
+  atomic_download_and_extract "$(get_download_url)" "$install_dir" '' ||
     fatal 'Oracle JDK install failed'
   register java "$MAJOR_VERSION" "$install_dir/bin"
 fi

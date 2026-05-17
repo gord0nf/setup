@@ -34,7 +34,7 @@ else
 
     log 'installing'
     url=$(get_windows_download_url "$version")
-    atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
+    atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
     register vim "$version" "$install_dir"
     ;;
 

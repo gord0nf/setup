@@ -19,6 +19,6 @@ default_nvim_dirs=(
 for nvim_dir in "${default_nvim_dirs[@]}"; do
   if [[ -d "$(dirname "$nvim_dir")" ]]; then
     log "creating directory link from '$nvim_dir' to config"
-    make_directory_link "$CONFIG" "$nvim_dir" $FORCE
+    make_directory_link "$CONFIG" "$nvim_dir"
   fi
 done

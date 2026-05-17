@@ -50,6 +50,6 @@ else
   url=$(get_download_url "$version")
 
   log 'installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
   register go "$version" "$install_dir/bin"
 fi

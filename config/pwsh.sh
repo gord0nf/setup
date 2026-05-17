@@ -17,7 +17,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 profile=$(eval "$THING -NoProfile -Command 'Write-Host \$PROFILE'")
 powershell_dir=$(dirname "$(convert_path_if_needed --unix "$profile")")
 log "creating dir link from '$powershell_dir' to config"
-make_directory_link "$CONFIG" "$powershell_dir" $FORCE
+make_directory_link "$CONFIG" "$powershell_dir"
 
 # bootstrap if Windows Powershell
 [[ $THING == powershell ]] && {

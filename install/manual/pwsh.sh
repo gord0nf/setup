@@ -55,7 +55,7 @@ else
   url=$(get_download_url "$version")
 
   log 'installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
   register pwsh "$version" "$install_dir"
 
   # if windows, add to system path so it can be detected by some windows things

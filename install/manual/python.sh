@@ -61,6 +61,6 @@ else
 
   log 'installing'
   url=$(get_download_url "$version")
-  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
   register python "$version" "$install_dir"
 fi

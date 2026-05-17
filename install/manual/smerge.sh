@@ -59,6 +59,6 @@ else
   url=$(get_download_url) || fatal "couldn't get url"
 
   log 'installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
   register sublime_merge "$(get_version "$url")" "$install_dir"
 fi
