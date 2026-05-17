@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=python
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -56,7 +53,7 @@ get_download_url() {
   esac
 }
 
-if ! $force && command_exists python && python --version; then
+if ! $FORCE && command_exists python && python --version; then
   log 'already installed'
 else
   log 'getting current version'
@@ -64,6 +61,6 @@ else
 
   log 'installing'
   url=$(get_download_url "$version")
-  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
   register python "$version" "$install_dir"
 fi

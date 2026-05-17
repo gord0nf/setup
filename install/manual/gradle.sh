@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=gradle
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -20,7 +17,7 @@ get_latest_version() {
     sed -E 's/.*"version"\s*:\s*"([0-9]+\.[0-9]+\.[0-9]+)".*/\1/'
 }
 
-if ! $force && command_exists gradle; then
+if ! $FORCE && command_exists gradle; then
   log 'already installed'
 elif ! command_exists java; then
   fatal 'java is a gradle prereq and no installation found. go get it...'
@@ -33,6 +30,6 @@ else
 
   log 'installing'
   url="https://services.gradle.org/distributions/gradle-$version-bin.zip"
-  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
   register gradle "$version" "$install_dir/bin"
 fi

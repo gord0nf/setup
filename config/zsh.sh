@@ -1,10 +1,6 @@
 #!/bin/bash
 
-force=false
-if [[ "$1" == '--force' ]]; then
-  force=true
-fi
-
+FORCE="${FORCE:-false}"
 THING=zsh
 CONFIG="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$THING"
 source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
@@ -12,7 +8,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
   exit 1
 }
 
-! $force && ! command_exists zsh && fatal 'not installed'
+! $FORCE && ! command_exists zsh && fatal 'not installed'
 
 # set ~/.zshrc to source $config_dir/zshrc.sh
 log 'making sure ~/.zshrc sources config'

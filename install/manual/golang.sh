@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=golang
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -45,7 +42,7 @@ get_download_url() {
   echo "https://go.dev/dl/$version.$os-$arch.$ext"
 }
 
-if ! $force && command_exists go; then
+if ! $FORCE && command_exists go; then
   log 'already installed'
 else
   log 'getting version'
@@ -53,6 +50,6 @@ else
   url=$(get_download_url "$version")
 
   log 'installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
   register go "$version" "$install_dir/bin"
 fi

@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=smerge
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -55,13 +52,13 @@ get_version() {
   fi
 }
 
-if ! $force && command_exists sublime_merge; then
+if ! $FORCE && command_exists sublime_merge; then
   log 'already installed'
 else
   log 'getting url'
   url=$(get_download_url) || fatal "couldn't get url"
 
   log 'installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
   register sublime_merge "$(get_version "$url")" "$install_dir"
 fi

@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=ohmyposh
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -30,7 +27,7 @@ get_download_url() {
   echo "https://cdn.ohmyposh.dev/releases/latest/posh-$os-$arch$([ $os == windows ] && echo .exe)"
 }
 
-if ! $force && command_exists oh-my-posh; then
+if ! $FORCE && command_exists oh-my-posh; then
   log 'already installed'
 else
   log 'downloading'

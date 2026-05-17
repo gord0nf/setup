@@ -1,10 +1,5 @@
 #!/bin/bash
 
-force=false
-if [[ "$1" == '--force' ]]; then
-  force=true
-fi
-
 THING=powershell
 CONFIG="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/pwsh"
 source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {

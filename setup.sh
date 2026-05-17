@@ -102,7 +102,6 @@ load_software_csv() {
 
 manager=
 install=true
-force=
 things=()
 other_scripts=()
 pre_commands=()
@@ -153,7 +152,7 @@ while (($# > 0)); do
     shift
     ;;
   --force | -f)
-    force='--force'
+    export FORCE=true
     shift
     ;;
   --all | -a)
@@ -225,7 +224,7 @@ for thing in "${things[@]}"; do
 
   if $install; then
     log "$thing: installing"
-    bash "$thing_install" "$thing_install_dir" $force && log_result "$thing install" || {
+    bash "$thing_install" "$thing_install_dir" && log_result "$thing install" || {
       log_result "$thing install"
       continue
     }
@@ -236,7 +235,7 @@ for thing in "${things[@]}"; do
 
   if [[ -e "$thing_config" ]]; then
     log "$thing: configuring"
-    bash "$thing_config" $force
+    bash "$thing_config"
     log_result "$thing config"
   elif ! $install; then
     log "no config for $thing"
@@ -245,7 +244,7 @@ done
 
 for script in "${other_scripts[@]}"; do
   log "script: $script"
-  bash "$script" '' $force
+  bash "$script" ''
   log_result "$script"
   echo # style
 done

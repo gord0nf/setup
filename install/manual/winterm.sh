@@ -1,10 +1,5 @@
 #!/bin/bash
 
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
-
 THING=winterm
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
   echo "fatal: couldn't source utils" >&2

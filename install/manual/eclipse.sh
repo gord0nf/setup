@@ -3,10 +3,7 @@
 # unfinished
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=eclipse
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -46,7 +43,7 @@ get_download_url() {
   echo "https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/$version/R/eclipse-java-$version-R-$os-$arch.$ext"
 }
 
-if ! $force && command_exists eclipse; then
+if ! $FORCE && command_exists eclipse; then
   log 'already installed'
 else
   log 'getting version'
@@ -54,6 +51,6 @@ else
 
   log 'installing'
   url=$(get_download_url "$version")
-  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
   register eclipse "$version" "$install_dir"
 fi

@@ -1,9 +1,6 @@
 #!/bin/bash
 
-force=false
-if [[ "$1" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 # supports being called from config/powershell.sh
 [[ "$THING" == powershell ]] || THING=pwsh
@@ -14,13 +11,13 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
   exit 1
 }
 
-! $force && ! command_exists $THING && fatal 'not installed'
+! $FORCE && ! command_exists $THING && fatal 'not installed'
 
 # link config dir
 profile=$(eval "$THING -NoProfile -Command 'Write-Host \$PROFILE'")
 powershell_dir=$(dirname "$(convert_path_if_needed --unix "$profile")")
 log "creating dir link from '$powershell_dir' to config"
-make_directory_link "$CONFIG" "$powershell_dir" $force
+make_directory_link "$CONFIG" "$powershell_dir" $FORCE
 
 # bootstrap if Windows Powershell
 [[ $THING == powershell ]] && {

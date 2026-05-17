@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=nodejs
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -41,7 +38,7 @@ get_download_url() {
   echo "https://nodejs.org/dist/$version/node-$version-$os-$arch.$ext"
 }
 
-if ! $force && command_exists node; then
+if ! $FORCE && command_exists node; then
   log 'already installed'
 else
   log 'getting version'
@@ -49,6 +46,6 @@ else
   url=$(get_download_url "$version")
 
   log 'installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
   register nodejs "$version" "$install_dir"
 fi

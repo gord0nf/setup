@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=java
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -42,11 +39,11 @@ get_download_url() {
   echo "$url"
 }
 
-if ! $force && command_exists java; then
+if ! $FORCE && command_exists java; then
   log 'already installed'
 else
   log 'installing Oracle JDK'
-  atomic_download_and_extract "$(get_download_url)" "$install_dir" '' $force ||
+  atomic_download_and_extract "$(get_download_url)" "$install_dir" '' $FORCE ||
     fatal 'Oracle JDK install failed'
   register java "$MAJOR_VERSION" "$install_dir/bin"
 fi

@@ -1,10 +1,6 @@
 #!/bin/bash
 
-force=false
-if [[ "$1" == '--force' ]]; then
-  force=true
-fi
-
+FORCE="${FORCE:-false}"
 THING=git
 CONFIG="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$THING"
 source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
@@ -12,7 +8,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
   exit 1
 }
 
-! $force && ! command_exists git && fatal 'not installed'
+! $FORCE && ! command_exists git && fatal 'not installed'
 
 log 'including config in global .gitconfig'
 git config set --global include.path "$CONFIG/gitconfig"

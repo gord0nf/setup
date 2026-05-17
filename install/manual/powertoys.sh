@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=
-if [[ "$2" == '--force' ]]; then
-  force='-Force'
-fi
+FORCE="${FORCE:-false}"
 
 THING=powertoys
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -20,4 +17,4 @@ if [[ "$install_dir" != '' ]]; then
   warn 'cannot change powertoys install location'
 fi
 
-powershell -NoProfile "$(dirname "${BASH_SOURCE[0]}")/Install-PowerToys.ps1" "$force"
+powershell -NoProfile "$(dirname "${BASH_SOURCE[0]}")/Install-PowerToys.ps1" "$FORCE"

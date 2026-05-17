@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=zsh
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -16,7 +13,7 @@ pkg install -y zsh || fatal 'install failed'
 
 # make sure install dir does not exist
 if item_exists "$install_dir"; then
-  if ! $force; then
+  if ! $FORCE; then
     warn "something's already at '$install_dir'"
     read -p "want to replace it? (y/n) [n] " yn
     case $yn in
@@ -33,7 +30,7 @@ ZSH="$install_dir" sh -c "$install_script" '' --unattended && {
 
   # make dir link to standard oh-my-zsh location in home
   log "creating directory link from ~/.oh-my-zsh to '$install_dir'"
-  make_directory_link "$install_dir" "$HOME/.oh-my-zsh" $force
+  make_directory_link "$install_dir" "$HOME/.oh-my-zsh" $FORCE
 
   # install basic plugins
   log 'installing zsh-autoseggestions'

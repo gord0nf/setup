@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=neovim
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -55,7 +52,7 @@ install_win32_make() {
   rm -fr "$tmpdir"
 }
 
-if ! $force && command_exists nvim; then
+if ! $FORCE && command_exists nvim; then
   log 'already installed'
 else
   log 'getting version'
@@ -63,7 +60,7 @@ else
   url=$(get_download_url "$version")
 
   log 'installing'
-  atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
+  atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
   register neovim "$version" "$install_dir/bin"
 fi
 

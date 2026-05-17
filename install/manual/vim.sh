@@ -1,10 +1,7 @@
 #!/bin/bash
 
 install_dir=$1
-force=false
-if [[ "$2" == '--force' ]]; then
-  force=true
-fi
+FORCE="${FORCE:-false}"
 
 THING=vim
 source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
@@ -27,7 +24,7 @@ get_windows_download_url() {
   echo "https://github.com/vim/vim-win32-installer/releases/download/$tag/gvim_${tag:1}_$arch.zip"
 }
 
-if ! $force && command_exists vim; then
+if ! $FORCE && command_exists vim; then
   log 'already installed'
 else
   case $(get_os) in
@@ -37,7 +34,7 @@ else
 
     log 'installing'
     url=$(get_windows_download_url "$version")
-    atomic_download_and_extract "$url" "$install_dir" '' $force || fatal 'install failed'
+    atomic_download_and_extract "$url" "$install_dir" '' $FORCE || fatal 'install failed'
     register vim "$version" "$install_dir"
     ;;
 
