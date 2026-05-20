@@ -4,10 +4,11 @@ SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 HELP=$'usage: setup.sh [opts] ...(things or setup scripts or presets)
 
 options:
- -m, --manager <mgr> run install script using a specific manager, defaults to first available
  -c, --config-only   only run the config script for the things
  -f, --force         runs install/config scripts even if already installed/configed and doesn\'t ask before overwriting stuff
- -a, --all           runs scripts for anything that can be installed with the manager used'
+ -a, --all           runs scripts for anything that can be installed with the manager used
+ -m, --manager <mgr> run install script using a specific manager, defaults to first available
+ --no-fallback       do not fall back to the manual manager if install fails'
 
 # utils
 source "$SOFTWARE_ROOT/utils.sh" || {
@@ -102,6 +103,10 @@ load_software_csv() {
 
 manager=
 install=true
+manual_fallback=$(
+  source "$SOFTWARE_ROOT/managers/manual.sh"
+  manager_can_use &>/dev/null && echo true || echo false
+)
 things=()
 other_scripts=()
 pre_commands=()
@@ -134,7 +139,10 @@ if [[ -z "$manager" ]]; then
       break
     }
   done
-  [[ -z "$manager" ]] && set_manager manual
+  [[ -z "$manager" ]] && {
+    set_manager manual
+    manual_fallback=false
+  }
 fi
 
 while (($# > 0)); do
@@ -145,6 +153,10 @@ while (($# > 0)); do
     ;;
   --manager | -m)
     shift
+    shift
+    ;;
+  --no-fallback)
+    manual_fallback=false
     shift
     ;;
   --config-only | -c)
@@ -219,14 +231,23 @@ for thing in "${things[@]}"; do
   [[ "$thing" != "${things[0]}" ]] && echo # separation line
 
   thing_install="$SOFTWARE_ROOT/install/$manager/$thing.sh"
+  thing_manual_install="$SOFTWARE_ROOT/install/manual/$thing.sh"
   thing_config="$SOFTWARE_ROOT/config/$thing.sh"
   thing_install_dir="$SOFTWARE_ROOT/installed/$thing"
 
   if $install; then
     log "$thing: installing"
     bash "$thing_install" "$thing_install_dir" && log_result "$thing install" || {
-      log_result "$thing install"
-      continue
+      if $manual_fallback && [[ -f "$thing_manual_install" ]]; then
+        warn "$thing install failed, falling back to manual install"
+        bash "$thing_manual_install" "$thing_install_dir" && log_result "$thing install" || {
+          log_result "$thing install"
+          continue
+        }
+      else
+        log_result "$thing install"
+        continue
+      fi
     }
   fi
 
