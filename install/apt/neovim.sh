@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$APT install -y make neovim-nightly
+$APT install -y make neovim
