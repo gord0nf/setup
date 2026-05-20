@@ -1,3 +1,3 @@
 #!/bin/bash
 
-apt install -y vim
+$APT install -y vim

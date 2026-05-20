@@ -1,3 +1,3 @@
 #!/bin/bash
 
-apt install -y golang
+$APT install -y golang

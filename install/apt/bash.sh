@@ -1,3 +1,4 @@
 #!/bin/bash
 
-apt install -y bash curl wget openssh
+$APT install -y --ignore-missing wget openssh
+$APT install -y bash curl

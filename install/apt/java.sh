@@ -2,4 +2,4 @@
 
 MAJOR_VERSION=25
 
-apt install -y openjdk-$MAJOR_VERSION
+$APT install -y openjdk-$MAJOR_VERSION

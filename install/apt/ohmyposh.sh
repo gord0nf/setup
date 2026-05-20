@@ -1,3 +1,3 @@
 #!/bin/bash
 
-apt install -y oh-my-posh
+$APT install -y oh-my-posh

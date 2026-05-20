@@ -1,3 +1,3 @@
 #!/bin/bash
 
-apt install -y ripgrep
+$APT install -y ripgrep
