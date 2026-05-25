@@ -49,3 +49,10 @@ things can be installed with several supported managers. if not passed into
 `setup.sh`, it chooses the first available. install scripts for all things
 supported by the manager are in `install/{MANAGER}`. each manager also defines
 itself and any meta functions in `managers/{MANAGER}.sh`.
+
+### software.csv
+
+when a software is installed using the `manual` manager, an entry is added in `software.csv`.
+this is for Windows, because standard users cannot create file links, so software dirs are added
+PATH from `software.csv`. for linux, `software.csv` is purely for documentation/logging (because
+registering also adds a symbolic link to the path).
