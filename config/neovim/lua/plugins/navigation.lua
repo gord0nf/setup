@@ -56,7 +56,7 @@ return {
           close = '<Esc>',
           reset = '<BS>',
           synchronize = '<CR>',
-          go_in_plus = 'n',
+          go_in_plus = 'L',
         },
       })
       local augroup = vim.api.nvim_create_augroup('mini_files_custom', { clear = true })
