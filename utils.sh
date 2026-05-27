@@ -1,12 +1,5 @@
 SOFTWARE_SRC=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-
-# alias for register.sh
-REGISTER_SH="$SOFTWARE_SRC/register.sh"
-if ! [[ -f "$REGISTER_SH" ]]; then
-  echo "fatal: no script at $REGISTER_SH"
-  exit 1
-fi
-register() { "$REGISTER_SH" "$@"; }
+GLOBAL_ENV="$SOFTWARE_SRC/.env.global"
 
 # logging functions
 ! [[ -z "$THING" ]] && source "$SOFTWARE_SRC/log.sh"
@@ -188,6 +181,7 @@ atomic_download_and_extract() {
     esac
   fi
 
+  mkdir -p "$tmpoutdir"
   download_and_extract "$url" "$tmpoutdir" "$archive_type" || {
     local exitstatus=$?
     if item_exists "$tmpoutdir"; then
@@ -207,4 +201,47 @@ get_latest_github_tag() {
   curl "https://api.github.com/repos/$repo/releases/latest" |
     grep -E -o '.*"tag_name".*:.+' |
     sed 's/^.*:\s*"\(.*\)".*$/\1/'
+}
+
+# interface for variables in .env.global (with special += syntax for appending)
+set_global_env() {
+  local name=$1
+  local value=$2
+  local global_env=
+  [[ -f "$GLOBAL_ENV" ]] || touch "$GLOBAL_ENV"
+
+  if [[ "$3" == "-a"* ]]; then
+    export "$name"="${!name}$value"
+    grep -qE "^$name\\+=" "$GLOBAL_ENV" &&
+      sed -i "/^$name+=/s/$/$value/" "$GLOBAL_ENV" ||
+      echo "$name+=$value" >>"$GLOBAL_ENV"
+  else
+    export "$name"="$value"
+    sed -i "/^$name=/d" "$GLOBAL_ENV"
+    echo "$name=$value" >>"$GLOBAL_ENV"
+  fi
+}
+
+add_global_path() {
+  local p=$(convert_path_if_needed --unix "$1") # global PATH stored in unix format
+  local global_PATH=$(sed -n 's/^PATH+=\(.*\)/\1/p' "$GLOBAL_ENV")
+  if [ -d "$p" ] && [[ ":$global_PATH:" != *":$p:"* ]]; then
+    set_global_env PATH ":$p" -append
+  fi
+}
+
+register() {
+  local target_bin=$1
+
+  if [[ -f "$target_bin" || -f "$target_bin.exe" ]]; then
+    local bin_dir=$(dirname "$target_bin")
+    case $(get_os) in
+    windows) add_global_path "$bin_dir" ;;
+    *)
+      [[ $EUID -eq 0 ]] && symlink_dir='/usr/local/bin/' || symlink_dir="$HOME/.local/bin"
+      add_global_path "$symlink_dir" # just in case
+      ln --symbolic "$target_bin" "$symlink_dir/$(basename "$target_bin")"
+      ;;
+    esac
+  fi
 }

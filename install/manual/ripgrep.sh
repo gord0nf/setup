@@ -55,5 +55,5 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register ripgrep "$version" "$install_dir"
+  register "$install_dir/rg"
 fi

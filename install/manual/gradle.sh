@@ -31,5 +31,5 @@ else
   log 'installing'
   url="https://services.gradle.org/distributions/gradle-$version-bin.zip"
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register gradle "$version" "$install_dir/bin"
+  register "$install_dir/bin/gradle"
 fi

@@ -61,7 +61,7 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register neovim "$version" "$install_dir/bin"
+  register "$install_dir/bin/nvim"
 fi
 
 # since some neovim stuff needs make, so if on windows, get it

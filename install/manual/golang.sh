@@ -51,5 +51,5 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register go "$version" "$install_dir/bin"
+  register "$install_dir/bin/go"
 fi

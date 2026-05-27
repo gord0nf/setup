@@ -56,7 +56,7 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register pwsh "$version" "$install_dir"
+  register "$install_dir/pwsh"
 
   # if windows, add to system path so it can be detected by some windows things
   if [[ $(get_os) == windows ]]; then

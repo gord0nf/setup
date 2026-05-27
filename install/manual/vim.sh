@@ -35,7 +35,7 @@ else
     log 'installing'
     url=$(get_windows_download_url "$version")
     atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-    register vim "$version" "$install_dir"
+    register "$install_dir/vim"
     ;;
 
   linux) # TODO: actually test this... or find somewhere reliable that has the binaries!
@@ -46,7 +46,7 @@ else
     git clone https://github.com/vim/vim.git
     cd vim/src
     make
-    register vim '' "$install_dir/some/path/after/making"
+    register "$install_dir/some/path/after/making/vim"
     ;;
 
   mac) fatal 'mac not supported yet' ;;

@@ -42,5 +42,5 @@ else
   fi
   rm -f "$tmp"
 
-  register ohmyposh '' "$install_dir"
+  register "$install_dir/oh-my-posh"
 fi

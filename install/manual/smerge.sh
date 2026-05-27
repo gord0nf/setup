@@ -60,5 +60,6 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register sublime_merge "$(get_version "$url")" "$install_dir"
+  register "$install_dir/sublime_merge"
+  register "$install_dir/smerge"
 fi

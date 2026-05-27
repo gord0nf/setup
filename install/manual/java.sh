@@ -45,5 +45,7 @@ else
   log 'installing Oracle JDK'
   atomic_download_and_extract "$(get_download_url)" "$install_dir" '' ||
     fatal 'Oracle JDK install failed'
-  register java "$MAJOR_VERSION" "$install_dir/bin"
+  register "$install_dir/bin/java"
+  register "$install_dir/bin/javac"
+  # TODO: possibly more java binaries (i cant remember)
 fi
