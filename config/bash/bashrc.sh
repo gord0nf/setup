@@ -8,20 +8,20 @@ export LANG="en_US.UTF-8"
 
 source "$BASH_CONFIG/utils.sh"
 
-# path --------------------------------------------------------------------------------------------
+# env vars --------------------------------------------------------------------------------------------
 
-if [[ -f "$SOFTWARE/software.csv" ]]; then
-  skip_headers=1
-  while IFS=, read -r name version paths; do
-    if ((skip_headers)); then
-      ((skip_headers--))
-    else
-      paths=${paths//|/ }
-      for path in "${paths[@]}"; do
-        export PATH="$PATH:$(convert_path_if_needed --unix "$path")"
-      done
+if [[ -f "$SOFTWARE/.env.global" ]]; then
+  line_regex='^([^=+]+)(\+?)=(.*)$'
+  while IFS= read -r line; do
+    [[ -z "${line// /}" || "$line" == '#'* ]] && continue
+    if [[ "$line" =~ $line_regex ]]; then
+      name=${BASH_REMATCH[1]}
+      case "${BASH_REMATCH[2]}" in
+      +) export "$name"="${!name}${BASH_REMATCH[3]}" ;;
+      *) export "$name"="${BASH_REMATCH[3]}" ;;
+      esac
     fi
-  done <"$SOFTWARE/software.csv"
+  done <"$SOFTWARE/.env.global"
 fi
 
 # oh-my-posh --------------------------------------------------------------------------------------
