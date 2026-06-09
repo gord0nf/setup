@@ -4,12 +4,12 @@ SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 HELP=$'usage: setup.sh [opts] ...(things or setup scripts or yaml config)
 
 options:
- -y, --yml-config    specific yaml config file
  -c, --config-only   only run the config script for the things
  -f, --force         runs install/config scripts even if already installed/configed and doesn\'t ask before overwriting stuff
  -a, --all           runs scripts for anything that can be installed with the manager used
  -m, --manager <mgr> run install script using a specific manager, defaults to first available
- --no-fallback       do not fall back to the manual manager if install fails'
+ --no-fallback       do not fall back to the manual manager if install fails
+ --no-default-yml    do not look for and use any yml configs other than explictly specified'
 
 # utils
 source "$SOFTWARE_ROOT/utils.sh" || {
@@ -94,13 +94,9 @@ for ((i = 0; i < $#; i++)); do
     [[ -z "$arg" ]] && fatal 'expected arg for --manager'
     set_manager "$arg" || fatal "invalid manager '$arg'"
     ;;
+  --no-default-yml) default_yml_config=false;;
   -*) ;;
-  *)
-    # if wer're gonna check it as a yml config...
-    if ! is_script "$arg" && [[ -f "$arg" ]]; then
-      default_yml_config=false
-    fi
-    ;;
+  *) default_yml_config=false;; # no default config if doing stuff explicitly
   esac
 done
 
@@ -135,7 +131,7 @@ while (($# > 0)); do
     echo "$HELP"
     exit
     ;;
-  --manager | -m | --yml-config | -y)
+  --manager | -m )
     shift
     shift
     ;;
