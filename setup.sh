@@ -121,11 +121,10 @@ if [[ -z "$manager" ]]; then
       break
     }
   done
-  [[ -z "$manager" ]] && {
-    set_manager manual
-    manual_fallback=false
-  }
+  [[ -z "$manager" ]] && set_manager manual
 fi
+
+[[ "$manager" == manual ]] && manual_fallback=false
 
 while (($# > 0)); do
   case "$1" in
