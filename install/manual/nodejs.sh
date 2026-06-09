@@ -47,6 +47,5 @@ else
 
   log 'installing'
   atomic_download_and_extract "$url" "$install_dir" '' || fatal 'install failed'
-  register "$install_dir/node"
-  register "$install_dir/npm"
+  register "$install_dir/node" "$install_dir/npm"
 fi

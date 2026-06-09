@@ -238,8 +238,7 @@ register() {
       windows) add_global_path "$bin_dir" ;;
       *)
         [[ $EUID -eq 0 ]] && symlink_dir='/usr/local/bin/' || symlink_dir="$HOME/.local/bin"
-        mkdir -p "$symlink_dir"
-        add_global_path "$symlink_dir" # just in case
+        mkdir -p "$symlink_dir" && add_global_path "$symlink_dir" # just in case
         ln --symbolic "$target_bin" "$symlink_dir/$(basename "$target_bin")"
         ;;
       esac
