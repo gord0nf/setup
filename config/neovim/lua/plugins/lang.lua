@@ -10,7 +10,7 @@
 
 ENABLED_LANGS = { 'default' } -- must be a name in the plugins/lsp/ dir
 local env_langs = os.getenv('NVIM_LANGS')
-if env_langs then
+if env_langs and env_langs ~= '' then
   vim.list_extend(ENABLED_LANGS, vim.split(env_langs, ':'))
 end
 
