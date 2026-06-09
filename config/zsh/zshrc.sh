@@ -1,20 +1,20 @@
 export ZSH_CONFIG=${0:A:h}
 export SOFTWARE="$(realpath "$ZSH_CONFIG/../../")" # @gord0nf/software specific
 
-# path --------------------------------------------------------------------------------------------
+# env vars ----------------------------------------------------------------------------------------
 
-if [[ -f "$SOFTWARE/software.csv" ]]; then
-  skip_headers=1
-  while IFS=, read -r name version paths; do
-    if ((skip_headers)); then
-      ((skip_headers--))
-    else
-      paths=${paths//|/ }
-      for path in $paths; do
-        export PATH="$PATH:$(convert_path_if_needed --unix "$path")"
-      done
+if [[ -f "$SOFTWARE/.env.global" ]]; then
+  line_regex='^([^=+]+)(\+?)=(.*)$'
+  while IFS= read -r line; do
+    [[ -z "${line// /}" || "$line" == '#'* ]] && continue
+    if [[ "$line" =~ $line_regex ]]; then
+      name=${match[1]}
+      case "${match[2]}" in
+      +) export "$name"="${(P)name}${match[3]}" ;;
+      *) export "$name"="${match[3]}" ;;
+      esac
     fi
-  done <"$SOFTWARE/software.csv"
+  done <"$SOFTWARE/.env.global"
 fi
 
 # oh-my-zsh configuration -------------------------------------------------------------------------
