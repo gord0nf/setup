@@ -8,7 +8,11 @@
 --  - formatters_by_ft: Table of { ft: formatters } for Conform
 --  - linters_by_ft:    Table of { ft: linters } for nvim-lint
 
-ENABLED_LANGS = { 'default', 'lua', 'js', 'go', 'java', 'powershell', 'python' } -- must be a name in the plugins/lsp/ dir
+ENABLED_LANGS = { 'default' } -- must be a name in the plugins/lsp/ dir
+local env_langs = os.getenv('NVIM_LANGS')
+if env_langs then
+  vim.list_extend(ENABLED_LANGS, vim.split(env_langs, ':'))
+end
 
 local merge_tables = require('utils').merge_tables
 local concat_tables = require('utils').concat_tables

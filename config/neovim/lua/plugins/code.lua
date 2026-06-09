@@ -1,4 +1,4 @@
-return {
+local plugins = {
   {
     'saghen/blink.cmp',
     dependencies = { 'rafamadriz/friendly-snippets' },
@@ -106,7 +106,11 @@ return {
       })
     end,
   },
-  {
+  { 'tpope/vim-surround' },
+}
+
+if os.getenv('NVIM_FLASH') then
+  table.insert(plugins, {
     'folke/flash.nvim',
     event = 'VeryLazy',
     opts = {
@@ -148,6 +152,7 @@ return {
         desc = 'Toggle Flash Search',
       },
     },
-  },
-  { 'tpope/vim-surround' },
-}
+  })
+end
+
+return plugins

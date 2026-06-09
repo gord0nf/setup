@@ -207,7 +207,6 @@ get_latest_github_tag() {
 set_global_env() {
   local name=$1
   local value=$2
-  local global_env=
   [[ -f "$GLOBAL_ENV" ]] || touch "$GLOBAL_ENV"
 
   if [[ "$3" == "-a"* ]]; then
@@ -215,6 +214,9 @@ set_global_env() {
     grep -qE "^$name\\+=" "$GLOBAL_ENV" &&
       sed -i "/^$name+=/s/$/$value/" "$GLOBAL_ENV" ||
       echo "$name+=$value" >>"$GLOBAL_ENV"
+  elif [[ "$2" == '-u'* ]]; then
+    export "$name"=
+    sed -i "/^$name=/d" "$GLOBAL_ENV"
   else
     export "$name"="$value"
     sed -i "/^$name=/d" "$GLOBAL_ENV"
@@ -224,7 +226,7 @@ set_global_env() {
 
 add_global_path() {
   local p=$(convert_path_if_needed --unix "$1") # global PATH stored in unix format
-  local global_PATH=$(sed -n 's/^PATH+=\(.*\)/\1/p' "$GLOBAL_ENV" 2> /dev/null)
+  local global_PATH=$(sed -n 's/^PATH+=\(.*\)/\1/p' "$GLOBAL_ENV" 2>/dev/null)
   if [ -d "$p" ] && [[ ":$global_PATH:" != *":$p:"* ]]; then
     set_global_env PATH ":$p" -append
   fi
@@ -398,4 +400,15 @@ function parse_yaml {
                 printf(\"%s='%s'\n\", val, assignment[val]);
         }
     }"
+}
+
+yaml_array_keys() {
+  local prefix=$1
+  local keys=()
+  local i=1
+  while [[ -v "$prefix$i" ]]; do
+    keys+=("$prefix$i")
+    ((i++))
+  done
+  echo "${keys[@]}"
 }

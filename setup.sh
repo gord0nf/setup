@@ -59,13 +59,8 @@ get_default_config() {
 
 load_yml_config() {
   eval $(parse_yaml "$1" yconf_) || fatal "couldn't parse yaml at $1"
-
-  # load install array
-  local i=1
-  while [[ -v "yconf_setup_$i" ]]; do
-    local key="yconf_setup_$i"
+  for key in $(yaml_array_keys yconf_setup_); do
     add_thing "${!key}" || warn "couldn't load install thing $i for $1"
-    ((i++))
   done
 }
 
