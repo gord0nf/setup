@@ -1,9 +1,10 @@
 #!/bin/bash
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-HELP=$'usage: setup.sh [opts] ...(things or setup scripts or presets)
+HELP=$'usage: setup.sh [opts] ...(things or setup scripts or yaml config)
 
 options:
+ -y, --yml-config    specific yaml config file
  -c, --config-only   only run the config script for the things
  -f, --force         runs install/config scripts even if already installed/configed and doesn\'t ask before overwriting stuff
  -a, --all           runs scripts for anything that can be installed with the manager used
@@ -51,39 +52,27 @@ add_thing() {
   return 0
 }
 
-get_preset_path() {
-  if [[ -f "$1" ]]; then
-    echo "$1"
-  elif [[ -f "$SOFTWARE_ROOT/presets/$1" ]]; then
-    echo "$SOFTWARE_ROOT/presets/$1"
-  else
-    return 1
-  fi
+get_default_config() {
+  find "$SOFTWARE_ROOT" "$HOME" -type f \( -name .software.yaml -o -name .software.yml \) |
+    head -n 1
 }
 
-load_preset() {
-  local preset_path=$1
-  local line_no=0
+load_yml_config() {
+  eval $(parse_yaml "$1" yconf_) || fatal "couldn't parse yaml at $1"
 
-  while IFS=$'\r\n' read -r line; do
-    ((line_no++))
-    [[ -z "$line" ]] && continue
-    if [[ "$line" =~ extends:(.+) ]]; then
-      local extended=$(get_preset_path "${BASH_REMATCH[1]}") && load_preset "$extended" ||
-        warn "couldn't load line $line_no for $preset_path"
-    elif [[ "$line" =~ pre:(.+) ]]; then
-      pre_commands+=("${BASH_REMATCH[1]}")
-    elif [[ "$line" =~ post:(.+) ]]; then
-      post_commands+=("${BASH_REMATCH[1]}")
-    else
-      add_thing "$line" || warn "couldn't load line $line_no for $preset_path"
-    fi
-  done <"$preset_path"
+  # load install array
+  local i=1
+  while [[ -v "yconf_setup_$i" ]]; do
+    local key="yconf_setup_$i"
+    add_thing "${!key}" || warn "couldn't load install thing $i for $1"
+    ((i++))
+  done
 }
 
 # parse args --------------------------------------------------------------------------------------
 
 manager=
+default_yml_config=true
 install=true
 manual_fallback=$(
   source "$SOFTWARE_ROOT/managers/manual.sh"
@@ -94,7 +83,7 @@ other_scripts=()
 pre_commands=()
 post_commands=()
 
-# initial pass to get manager
+# initial pass to get manager and check whether should use default yml config
 for ((i = 0; i < $#; i++)); do
   arg=${!i}
   case "$arg" in
@@ -103,6 +92,13 @@ for ((i = 0; i < $#; i++)); do
     arg=${!i}
     [[ -z "$arg" ]] && fatal 'expected arg for --manager'
     set_manager "$arg" || fatal "invalid manager '$arg'"
+    ;;
+  -*) ;;
+  *)
+    # if wer're gonna check it as a yml config...
+    if ! is_script "$arg" && [[ -f "$arg" ]]; then
+      default_yml_config=false
+    fi
     ;;
   esac
 done
@@ -125,6 +121,11 @@ if [[ -z "$manager" ]]; then
 fi
 
 [[ "$manager" == manual ]] && manual_fallback=false
+$default_yml_config && {
+  default_config=$(get_default_config)
+  log "using config at $default_config"
+  load_yml_config "$default_config"
+}
 
 while (($# > 0)); do
   case "$1" in
@@ -132,7 +133,7 @@ while (($# > 0)); do
     echo "$HELP"
     exit
     ;;
-  --manager | -m)
+  --manager | -m | --yml-config | -y)
     shift
     shift
     ;;
@@ -164,8 +165,8 @@ while (($# > 0)); do
   *)
     if is_script "$1"; then
       ! has_element other_scripts "$1" && other_scripts+=("$1")
-    elif preset_path=$(get_preset_path "$1"); then
-      load_preset "$preset_path"
+    elif [[ -f "$1" ]]; then
+      load_yml_config "$1"
     else
       add_thing "$1" || {
         warn "'$1' isn't a thing, preset, or script. skipping..."

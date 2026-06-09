@@ -1,0 +1,9 @@
+setup:
+  - bash
+  - git
+  - powershell
+  - vim
+  - zsh
+  - neovim
+  - ripgrep
+  - python

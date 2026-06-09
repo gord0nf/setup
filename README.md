@@ -1,5 +1,7 @@
 # dev configuration
 
+a setup abstraction over installation managers and configs.
+
 ## usage
 
 ```bash
@@ -49,3 +51,13 @@ things can be installed with several supported managers. if not passed into
 `setup.sh`, it chooses the first available. install scripts for all things
 supported by the manager are in `install/{MANAGER}`. each manager also defines
 itself and any meta functions in `managers/{MANAGER}.sh`.
+
+### yaml config
+
+a yaml config can be supplied (see `examples/`), which is useful because a thing's config script
+can look at the yaml config and hook things up differently.
+
+if no yaml config is supplied as an arg, `setup.sh` looks for:
+
+- `$SOFTWARE/.software.yml`
+- `~/.software.yml`

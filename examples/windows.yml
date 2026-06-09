@@ -1,0 +1,8 @@
+setup:
+  - bash
+  - git
+  - powershell
+  - vim
+  - pwsh
+  - winterm
+  - powertoys
