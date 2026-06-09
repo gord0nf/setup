@@ -6,12 +6,18 @@ function Test-Binary_pf() {
   return Get-Command $Binary -ErrorAction SilentlyContinue
 }
 
+function Convert-MingwPath([string]$Path) {
+  $Path -replace "^/([a-zA-Z])/", "$1:/" -replace "/", "\"
+}
+
 function Push-ToPath_pf() {
   param(
     [string[]]$Directories,
     [switch]$AtStart
   )
-  $dirs = $Directories | Where-Object { Test-Path $_ } | ForEach-Object { Convert-Path $_ }
+  $dirs = $Directories |
+    ForEach-Object { Convert-Path $(Convert-MingwPath $_) } |
+    Where-Object { Test-Path $_ } 
   $dirs = $dirs -join ';'
   if ($AtStart) {
     $env:PATH = "$dirs;$env:PATH"
@@ -25,7 +31,7 @@ function Set-EnvVars_pf() {
   foreach ($name in $EnvVariablePairs.Keys) {
     $value = $EnvVariablePairs[$name]
     if (!$NotAPath -and (Test-Path $value)) {
-      $value = Convert-Path $value
+      $value = Convert-Path $(Convert-MingwPath $value)
     } elseif (!$NotAPath) {
       continue; 
     }
@@ -43,13 +49,25 @@ Set-EnvVars_pf @{
 $HIST = $env:HIST
 $SHELL = $env:SHELL
 
-# Path --------------------------------------------------------------------------------------------
+# Register to path from .env.global (contains most PATH stuff)
+$EnvHash = @{}
+Get-Content "$env:SOFTWARE/.env.global" -ErrorAction SilentlyContinue | ForEach-Object {
+  if ($_ -match '^([^=+]+)(\+?)=(.*)$') {
+    if ($Matches[2] -eq '+') {
+      if ($Matches[1] -eq 'PATH') { Push-ToPath_pf -AtStart $(Matches[3] -split ':') }
+      else {
+        $Name = "Env:$($Matches[1])"
+        Set-Item -Path "$Name" -Value "$((Get-Item -Path "$Name").Value)$($Matches[3])"
+      }
+    } else {
+      $EnvHash[$Matches[1]] = $Matches[3]
+    }
+  }
+}
+Set-EnvVars_pf "$EnvHash"
+Remove-Variable 'EnvHash'
 
-# Register to path from software.csv
-Push-ToPath_pf -AtStart (
-  Import-Csv "$env:SOFTWARE/software.csv" -ErrorAction SilentlyContinue |
-    ForEach-Object { $_.paths -split '\|'}
-)
+# Path --------------------------------------------------------------------------------------------
 
 # Some edge cases to check for
 Push-ToPath_pf @(
@@ -165,4 +183,3 @@ Register-EngineEvent -SourceIdentifier PowerShell.OnIdle -SupportEvent -Action {
     Remove-Item Function:\*_pf
   }
 }
-
