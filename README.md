@@ -44,8 +44,8 @@ each thing has:
 - (optional) `config/{THING}/` & `config/{THING}.sh`: the directory contains any
   config stuffs and the script is required to setup/link all the configuration
   to the current installation.
-  - individual usage like `{THING}.sh [<yaml_config>]`
-  - to force install, `FORCE=true {THING}.sh ...`
+  - individual usage like `{THING}.sh`
+  - to force install, `FORCE=true {THING}.sh`
 
 things can be installed with several supported managers. if not passed into
 `setup.sh`, it chooses the first available. install scripts for all things
@@ -55,11 +55,11 @@ itself and any meta functions in `managers/{MANAGER}.sh`.
 ### yaml config
 
 a yaml config can be supplied (see `examples/`), which is useful because a thing's config script
-can look at the yaml config and hook things up differently.
+can look for vars loaded from yaml config and hook things up differently.
 
 if no yaml config is supplied as an arg, `setup.sh` looks for:
 
 - `$SOFTWARE/.software.yml`
 - `~/.software.yml`
 
-only the last supplied yaml config is passed to the config script by `setup.sh`
+`setup.sh` loads nested yaml config into exported shell variables like `ymlconf_{...}` (see `parse_yaml()` in `utils.sh`), which config scripts can then use.

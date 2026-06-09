@@ -3,7 +3,6 @@
   - github-cli
   - vscode
   - firefox (with profiles)
-- multiple yml configs stack
 - extend other yml configs
 - setup.sh force use default software.yml
 - setup.sh no preinstall script if no things
