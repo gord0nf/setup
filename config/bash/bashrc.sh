@@ -10,7 +10,7 @@ source "$BASH_CONFIG/utils.sh"
 
 # env vars --------------------------------------------------------------------------------------------
 
-if [[ -f "$SOFTWARE/.env.global" ]]; then
+if [[ -f "$HOME/.env" ]]; then
   line_regex='^([^=+]+)(\+?)=(.*)$'
   while IFS= read -r line; do
     [[ -z "${line// /}" || "$line" == '#'* ]] && continue
@@ -21,7 +21,7 @@ if [[ -f "$SOFTWARE/.env.global" ]]; then
       *) export "$name"="${BASH_REMATCH[3]}" ;;
       esac
     fi
-  done <"$SOFTWARE/.env.global"
+  done <"$HOME/.env"
 fi
 
 # oh-my-posh --------------------------------------------------------------------------------------

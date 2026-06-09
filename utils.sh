@@ -1,5 +1,5 @@
 SOFTWARE_SRC=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-GLOBAL_ENV="$SOFTWARE_SRC/.env.global"
+GLOBAL_ENV="$HOME/.env"
 
 # logging functions
 ! [[ -z "$THING" ]] && source "$SOFTWARE_SRC/log.sh"
@@ -203,7 +203,7 @@ get_latest_github_tag() {
     sed 's/^.*:\s*"\(.*\)".*$/\1/'
 }
 
-# interface for variables in .env.global (with special += syntax for appending)
+# interface for variables in global .env (with special += syntax for appending)
 set_global_env() {
   local name=$1
   local value=$2
