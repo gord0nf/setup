@@ -80,7 +80,7 @@ pre_commands=()
 post_commands=()
 
 # initial pass to get manager and check whether should use default yml config
-for ((i = 0; i < $#; i++)); do
+for ((i = 1; i <= $#; i++)); do
   arg=${!i}
   case "$arg" in
   --manager | -m)
@@ -89,9 +89,9 @@ for ((i = 0; i < $#; i++)); do
     [[ -z "$arg" ]] && fatal 'expected arg for --manager'
     set_manager "$arg" || fatal "invalid manager '$arg'"
     ;;
-  --no-default-yml) default_yml_config=false;;
+  --no-default-yml) default_yml_config=false ;;
   -*) ;;
-  *) default_yml_config=false;; # no default config if doing stuff explicitly
+  *) default_yml_config=false ;; # no default config if doing stuff explicitly
   esac
 done
 
@@ -126,7 +126,7 @@ while (($# > 0)); do
     echo "$HELP"
     exit
     ;;
-  --manager | -m )
+  --manager | -m)
     shift
     shift
     ;;
