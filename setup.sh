@@ -53,7 +53,7 @@ add_thing() {
 }
 
 get_default_config() {
-  find "$SOFTWARE_ROOT" "$HOME" -type f \( -name .software.yaml -o -name .software.yml \) |
+  find "$SOFTWARE_ROOT" "$HOME" -type f \( -name software.yaml -o -name software.yml \) |
     head -n 1
 }
 
