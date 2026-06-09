@@ -73,6 +73,7 @@ load_yml_config() {
 
 manager=
 default_yml_config=true
+last_yml_config=
 install=true
 manual_fallback=$(
   source "$SOFTWARE_ROOT/managers/manual.sh"
@@ -121,10 +122,11 @@ if [[ -z "$manager" ]]; then
 fi
 
 [[ "$manager" == manual ]] && manual_fallback=false
+
 $default_yml_config && {
-  default_config=$(get_default_config)
-  log "using config at $default_config"
-  load_yml_config "$default_config"
+  last_yml_config=$(get_default_config)
+  log "using config at $last_yml_config"
+  load_yml_config "$last_yml_config"
 }
 
 while (($# > 0)); do
@@ -167,6 +169,7 @@ while (($# > 0)); do
       ! has_element other_scripts "$1" && other_scripts+=("$1")
     elif [[ -f "$1" ]]; then
       load_yml_config "$1"
+      last_yml_config=$1
     else
       add_thing "$1" || {
         warn "'$1' isn't a thing, preset, or script. skipping..."
@@ -235,7 +238,7 @@ for thing in "${things[@]}"; do
 
   if [[ -e "$thing_config" ]]; then
     log "$thing: configuring"
-    bash "$thing_config"
+    bash "$thing_config" "$last_yml_config"
     log_result "$thing config"
   elif ! $install; then
     log "no config for $thing"
