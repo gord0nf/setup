@@ -3,3 +3,13 @@
   - github-cli
   - vscode
   - firefox (with profiles)
+- multiple yml configs stack
+- extend other yml configs
+- setup.sh force use default software.yml
+- setup.sh no preinstall script if no things
+- split stdout to log file
+- clear screen after each thing
+- setup.sh arg to ignore failled things
+- manually specify manager in yml config
+- neovim
+  - different key bindings for android vs pc
