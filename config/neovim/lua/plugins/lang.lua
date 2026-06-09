@@ -72,9 +72,11 @@ local plugins = {
       end
       for _, stuff_key in ipairs({ 'formatters_by_ft', 'linters_by_ft' }) do
         for _, tools in pairs(aggregated_stuff[stuff_key]) do
-          for _, tool in ipairs(tools) do
-            if not vim.tbl_contains(ensure_installed, tool) then
-              ensure_installed[#ensure_installed + 1] = tool
+          if tools.mason == nil or tools.mason then
+            for k, tool in ipairs(tools) do
+              if k ~= 'mason' and not vim.tbl_contains(ensure_installed, tool) then
+                ensure_installed[#ensure_installed + 1] = tool
+              end
             end
           end
         end
