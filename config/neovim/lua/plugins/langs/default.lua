@@ -1,6 +1,5 @@
 return {
   parsers = {
-    'bash',
     'diff',
     'html',
     'json',
@@ -15,17 +14,7 @@ return {
     'xml',
     'yaml',
   },
-
-  servers = {
-    jsonls = {},
-    bashls = {},
-  },
-
-  formatters_by_ft = {
-    bash = { 'shfmt' },
-    sh = { 'shfmt' },
-  },
-
+  servers = { jsonls = {} },
   plugins = {
     {
       'windwp/nvim-autopairs',
