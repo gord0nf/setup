@@ -55,7 +55,7 @@ itself and any meta functions in `managers/{MANAGER}.sh`.
 ### yaml config
 
 a yaml config can be supplied (see `examples/`), which is useful because a thing's config script
-can look for vars loaded from yaml config and hook things up differently.
+can look for vars loaded from yaml config and hook things up differently. yaml configs can extend other yaml configs.
 
 if no yaml config is supplied as an arg, `setup.sh` looks for:
 

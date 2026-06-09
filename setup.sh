@@ -58,9 +58,18 @@ get_default_config() {
 }
 
 load_yml_config() {
+  # first look for other configs to extend
+  while IFS= read -r extended_config; do 
+    case "$extended_config" in
+      /* | ~/*);;
+      *)extended_config="$(dirname "$1")/$extended_config"
+    esac
+    load_yml_config "$extended_config"
+  done < <(parse_yaml_noctx "$1" | sed -nE "s/^extends(_[0-9]+)?='(.+)'$/\\2/p")
+
   export $(parse_yaml "$1" ymlconf_ | xargs -L 1) || fatal "couldn't parse yaml at $1"
   for key in $(yaml_array_keys ymlconf_setup_); do
-    add_thing "${!key}" || warn "couldn't load install thing $i for $1"
+    add_thing "${!key}" || warn "couldn't load install '${!key}' in $1 (thing $i)"
   done
 }
 

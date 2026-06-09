@@ -1,8 +1,5 @@
+extends: minimal.yml
 setup:
-  - bash
-  - git
-  - powershell
-  - vim
   - ohmyposh
   - neovim
   - ripgrep
