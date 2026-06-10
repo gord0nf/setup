@@ -1,13 +1,18 @@
-- add software:
-  - ffmpeg
+pick- add software:
+  4 ffmpeg
   - github-cli
   - vscode
   - firefox (with profiles)
+- add this repo dir to global path by default (for setup.sh)
 - setup.sh force use default software.yml
 - setup.sh no preinstall script if no things
 - split stdout to log file
 - clear screen after each thing
 - setup.sh arg to ignore failled things
 - manually specify manager in yml config
+- fallback for $APT in install/apt scripts
+- preset: syntax in extends yml config
+  - examples/ -> presets/
+- $SOFTWARE/profiles dir for different users
 - neovim
   - different key bindings for android vs pc
