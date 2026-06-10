@@ -6,22 +6,16 @@ export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
 export LANG="en_US.UTF-8"
 
-source "$BASH_CONFIG/utils.sh"
+command_exists() {
+  command -v "$1" &>/dev/null
+}
 
 # env vars --------------------------------------------------------------------------------------------
 
 if [[ -f "$HOME/.env" ]]; then
-  line_regex='^([^=+]+)(\+?)=(.*)$'
-  while IFS= read -r line; do
-    [[ -z "${line// /}" || "$line" == '#'* ]] && continue
-    if [[ "$line" =~ $line_regex ]]; then
-      name=${BASH_REMATCH[1]}
-      case "${BASH_REMATCH[2]}" in
-      +) export "$name"="${!name}${BASH_REMATCH[3]}" ;;
-      *) export "$name"="${BASH_REMATCH[3]}" ;;
-      esac
-    fi
-  done <"$HOME/.env"
+  set -a
+  source "$HOME/.env"
+  set +a
 fi
 
 # oh-my-posh --------------------------------------------------------------------------------------
@@ -38,8 +32,32 @@ fi
 
 # prettier ----------------------------------------------------------------------------------------
 
-PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/nodejs/prettierrc.json"
+export PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/nodejs/prettierrc.json"
 
-# -------------------------------------------------------------------------------------------------
+# aliases -----------------------------------------------------------------------------------------
 
-source "$BASH_CONFIG/aliases.sh"
+# Basic cmd line utils
+alias ll='ls -alh --color=auto'
+alias la='ls -A --color=auto'
+alias l='ls -CF --color=auto'
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# File operations
+alias rm="rm -i"
+alias mv="mv -i"
+alias cp="cp -i"
+alias mkdir='mkdir -pv'
+alias rmdir='rmdir -v'
+
+# Pretty print PATH
+path() { echo "${PATH//:/$'\n'}"; }
+
+# System information shortcuts
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+alias ps='ps aux'
+alias top='htop'
