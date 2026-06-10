@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$APT install -y nodejs npm
+${APT:-apt} install -y nodejs npm

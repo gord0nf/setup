@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$APT install -y sway
+${APT:-apt} install -y sway

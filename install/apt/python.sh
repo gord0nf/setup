@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$APT install -y python
+${APT:-apt} install -y python

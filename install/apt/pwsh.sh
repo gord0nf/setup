@@ -6,4 +6,4 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
   exit 1
 }
 
-$APT install -y powershell || fatal 'install failed'
+${APT:-apt} install -y powershell || fatal 'install failed'

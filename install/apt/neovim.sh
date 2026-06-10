@@ -11,4 +11,4 @@ command_exists nvim && {
   exit
 }
 
-$APT install -y make neovim
+${APT:-apt} install -y make neovim

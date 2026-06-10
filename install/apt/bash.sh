@@ -1,4 +1,4 @@
 #!/bin/bash
 
-$APT install -y --ignore-missing wget openssh
-$APT install -y bash curl unzip tar grep 
+${APT:-apt} install -y --ignore-missing wget openssh
+${APT:-apt} install -y bash curl unzip tar grep

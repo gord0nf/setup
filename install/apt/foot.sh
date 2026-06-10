@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$APT install -y foot foot-themes
+${APT:-apt} install -y foot foot-themes

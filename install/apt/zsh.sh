@@ -9,7 +9,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../utils.sh" || {
   exit 1
 }
 
-$APT install -y zsh || fatal 'install failed'
+${APT:-apt} install -y zsh || fatal 'install failed'
 
 # make sure install dir does not exist
 if item_exists "$install_dir"; then

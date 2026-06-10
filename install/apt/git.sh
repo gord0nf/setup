@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$APT install -y git
+${APT:-apt} install -y git
