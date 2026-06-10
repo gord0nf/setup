@@ -10,5 +10,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 os=$(get_os)
 [[ "$os" == 'windows' ]] || fatal "powershell is for windows (os=$os)"
 
-# actual config logic is the same as Powershell Core
+### actual config logic is the same as Powershell Core
 . "$(dirname "${BASH_SOURCE[0]}")/pwsh.sh"
+
+# install fonts
+log 'installing fonts'
+powershell "$CONFIG/../fonts/Install-Fonts.ps1"
