@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+SOFTWARE_DATA=$SOFTWARE_ROOT/_data
 HELP=$'usage: setup.sh [opts] ...(things or setup scripts or yaml config)
 
 options:
@@ -187,8 +188,8 @@ while (($# > 0)); do
 done
 
 # create dir for installed things
-if ! [[ -d "$SOFTWARE_ROOT/installed" ]]; then
-  mkdir "$SOFTWARE_ROOT/installed"
+if ! [[ -d "$SOFTWARE_DATA/installed" ]]; then
+  mkdir "$SOFTWARE_DATA/installed"
 fi
 
 # if windows, set shell-agnostic $SOFTWARE env var (needed for configs of some windows things)
@@ -230,7 +231,7 @@ for thing in "${things[@]}"; do
   thing_install="$SOFTWARE_ROOT/install/$manager/$thing.sh"
   thing_manual_install="$SOFTWARE_ROOT/install/manual/$thing.sh"
   thing_config="$SOFTWARE_ROOT/config/$thing.sh"
-  thing_install_dir="$SOFTWARE_ROOT/installed/$thing"
+  thing_install_dir="$SOFTWARE_DATA/installed/$thing"
 
   if $install; then
     log "$thing: installing"

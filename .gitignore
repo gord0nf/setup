@@ -1,5 +1,5 @@
 # core stuff
-installed/
+_data
 software.csv
 0
 .env*
