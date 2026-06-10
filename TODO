@@ -1,9 +1,8 @@
-pick- add software:
-  4 ffmpeg
+- add software:
+  - ffmpeg
   - github-cli
   - vscode
   - firefox (with profiles)
-- add this repo dir to global path by default (for setup.sh)
 - setup.sh force use default software.yml
 - setup.sh no preinstall script if no things
 - split stdout to log file

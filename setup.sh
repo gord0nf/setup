@@ -59,10 +59,10 @@ get_default_config() {
 
 load_yml_config() {
   # first look for other configs to extend
-  while IFS= read -r extended_config; do 
+  while IFS= read -r extended_config; do
     case "$extended_config" in
-      /* | ~/*);;
-      *)extended_config="$(dirname "$1")/$extended_config"
+    /* | ~/*) ;;
+    *) extended_config="$(dirname "$1")/$extended_config" ;;
     esac
     load_yml_config "$extended_config"
   done < <(parse_yaml_noctx "$1" | sed -nE "s/^extends(_[0-9]+)?='(.+)'$/\\2/p")
@@ -193,6 +193,9 @@ if [[ $(get_os) == windows ]] && command_exists powershell; then
   )" || warn "couldn't set SOFTWARE sys env var, some Windows things might be iffy"
 fi
 
+# add SOFTWARE_ROOT to path to expose setup.sh
+add_global_path "$SOFTWARE_ROOT"
+
 # run scripts -------------------------------------------------------------------------------------
 
 log "using '$manager' manager"
@@ -235,7 +238,7 @@ for thing in "${things[@]}"; do
   fi
 
   if [[ -e "$thing_config" ]]; then
-      log "$thing: configuring"
+    log "$thing: configuring"
     bash "$thing_config"
     log_result "$thing config"
   elif ! $install; then
