@@ -198,6 +198,10 @@ add_global_path "$SOFTWARE_ROOT"
 
 # run scripts -------------------------------------------------------------------------------------
 
+if [[ "${#things[@]}" -eq 0 && "${#other_scripts[@]}" -eq 0 ]]; then
+  fatal 'nothing to do'
+fi
+
 log "using '$manager' manager"
 source "$SOFTWARE_ROOT/managers/$manager.sh"
 manager_can_use || fatal "cannot use $manager manager on your system"

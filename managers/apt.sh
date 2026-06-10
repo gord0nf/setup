@@ -13,15 +13,21 @@ manager_can_use() {
   }
 }
 
-manager_preinstall() {
-   $APT update || {
-	if [[ $APT != sudo* &&  $EUID -ne 0  ]]; then
-		log 'sudo required to install with apt'
-		export APT='sudo apt'
-		$APT update || return 1
+if [[ "$install" != 'false' ]]; then
+  manager_preinstall() {
+    $APT update || {
+      if [[ $APT != sudo* && $EUID -ne 0 ]]; then
+        log 'sudo required to install with apt'
+        export APT='sudo apt'
+        $APT update || return 1
 
-		# sudo keepalive
-		while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null & 
-	fi
+        # sudo keepalive
+        while true; do
+          sudo -n true
+          sleep 60
+          kill -0 "$$" || exit
+        done 2>/dev/null &
+      fi
+    }
   }
-}
+fi
