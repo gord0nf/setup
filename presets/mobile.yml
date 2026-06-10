@@ -1,4 +1,4 @@
-extends: ./minimal.yml
+extends: preset:minimal
 setup:
   - zsh
   - neovim

@@ -8,8 +8,6 @@
 - clear screen after each thing
 - setup.sh arg to ignore failled things
 - manually specify manager in yml config
-- preset: syntax in extends yml config
-  - examples/ -> presets/
 - $SOFTWARE/profiles dir for different users
 - neovim
   - different key bindings for android vs pc

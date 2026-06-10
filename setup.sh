@@ -59,12 +59,17 @@ get_default_config() {
 
 load_yml_config() {
   # first look for other configs to extend
-  while IFS= read -r extended_config; do
-    case "$extended_config" in
-    /* | ~/*) ;;
-    *) extended_config="$(dirname "$1")/$extended_config" ;;
-    esac
-    load_yml_config "$extended_config"
+  while IFS= read -r extended; do
+    if [[ "$extended" =~ ^preset:(.+)$ ]]; then
+      extended="$SOFTWARE_ROOT/presets/${BASH_REMATCH[1]}.yml"
+      [[ -f "$extended" ]] || fatal "no preset named '${BASH_REMATCH[1]}'"
+    else
+      case "$extended" in
+      /* | ~/*) ;;
+      *) extended="$(dirname "$1")/$extended" ;;
+      esac
+    fi
+    load_yml_config "$extended"
   done < <(parse_yaml_noctx "$1" | sed -nE "s/^extends(_[0-9]+)?='(.+)'$/\\2/p")
 
   export $(parse_yaml "$1" ymlconf_ | xargs -L 1) || fatal "couldn't parse yaml at $1"
