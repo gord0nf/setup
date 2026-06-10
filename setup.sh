@@ -53,11 +53,6 @@ add_thing() {
   return 0
 }
 
-get_default_config() {
-  find "$SOFTWARE_ROOT" "$HOME" -type f \( -name software.yaml -o -name software.yml \) |
-    head -n 1
-}
-
 load_yml_config() {
   # first look for other configs to extend
   while IFS= read -r extended; do
@@ -77,6 +72,30 @@ load_yml_config() {
   for key in $(yaml_array_keys ymlconf_setup_); do
     add_thing "${!key}" || warn "couldn't load install '${!key}' in $1 (thing $i)"
   done
+}
+
+use_default_config() {
+  local yml_config=$(
+    find "$HOME" "$SOFTWARE_ROOT" \
+      -type f \( -name software.yaml -o -name software.yml \) |
+      head -n 1
+  )
+
+  # config in $SOFTWARE_DATA/profiles should take priority before $SOFTWARE/software.yml
+  if [[ "$(dirname "$yml_config")" == "$SOFTWARE_ROOT" ]]; then
+    for ext in yml yaml; do
+      local profile_config="$SOFTWARE_DATA/profiles/$(whoami).$ext"
+      [[ -f "$profile_config" ]] && {
+        yml_config=$profile_config
+        break
+      }
+    done
+  fi
+
+  ! [[ -z "$yml_config" ]] && {
+    log "using config at $yml_config"
+    load_yml_config "$yml_config"
+  }
 }
 
 # parse args --------------------------------------------------------------------------------------
@@ -128,13 +147,7 @@ fi
 
 [[ "$manager" == manual ]] && manual_fallback=false
 
-$default_yml_config && {
-  yml_config=$(get_default_config)
-  ! [[ -z "$yml_config" ]] && {
-    log "using config at $yml_config"
-    load_yml_config "$yml_config"
-  }
-}
+$default_yml_config && use_default_config
 
 while (($# > 0)); do
   case "$1" in

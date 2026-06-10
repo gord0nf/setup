@@ -8,6 +8,5 @@
 - clear screen after each thing
 - setup.sh arg to ignore failled things
 - manually specify manager in yml config
-- $SOFTWARE/profiles dir for different users
 - neovim
   - different key bindings for android vs pc

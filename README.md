@@ -57,9 +57,10 @@ itself and any meta functions in `managers/{MANAGER}.sh`.
 a yaml config can be supplied (see `examples/`), which is useful because a thing's config script
 can look for vars loaded from yaml config and hook things up differently. yaml configs can extend other yaml configs.
 
-if no yaml config is supplied as an arg, `setup.sh` looks for:
+if no yaml config is supplied as an arg, `setup.sh` looks for (takes first):
 
-- `$SOFTWARE/.software.yml`
-- `~/.software.yml`
+- `$HOME/software.yml`
+- `$SOFTWARE/_data/profiles/$(whoami).yml`
+- `$SOFTWARE/software.yml`
 
 `setup.sh` loads nested yaml config into exported shell variables like `ymlconf_{...}` (see `parse_yaml()` in `utils.sh`), which config scripts can then use.
