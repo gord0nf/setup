@@ -5,8 +5,10 @@ inoremap jk <Esc>
 inoremap kj <Esc>
 
 " Mobile freindly exit insert mode
-inoremap fj <Esc>
-inoremap jf <Esc>
+if $PREFIX =~ '^com\.termux.*$'
+  inoremap fj <Esc>
+  inoremap jf <Esc>
+endi
 
 " Quick write
 nmap <leader>w :w<CR>
