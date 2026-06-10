@@ -124,8 +124,10 @@ fi
 
 $default_yml_config && {
   yml_config=$(get_default_config)
-  log "using config at $yml_config"
-  load_yml_config "$yml_config"
+  ! [[ -z "$yml_config" ]] && {
+    log "using config at $yml_config"
+    load_yml_config "$yml_config"
+  }
 }
 
 while (($# > 0)); do
