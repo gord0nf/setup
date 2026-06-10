@@ -46,4 +46,10 @@ return {
     end
     return config
   end,
+  is_android = function()
+    local prefix = os.getenv('PREFIX')
+    if prefix and string.find(prefix, 'com.termux') then
+      return true
+    end
+  end,
 }

@@ -1,11 +1,11 @@
--- lua stuff isn't fully supported on aarch64 yet (but it usually can be installed via pkg manager)
-local is_aarch = vim.loop.os_uname().machine == 'aarch64'
+-- lua stuff isn't fully supported on android yet (but it usually can be installed via pkg manager)
+local is_android = require('utils').is_android()
 
 return {
 
   servers = {
     lua_ls = {
-      mason = not is_aarch,
+      mason = not is_android,
       settings = {
         Lua = {
           diagnostics = {
@@ -30,6 +30,6 @@ return {
   },
 
   formatters_by_ft = {
-    lua = { 'stylua', mason = not is_aarch },
+    lua = { 'stylua', mason = not is_android },
   },
 }
