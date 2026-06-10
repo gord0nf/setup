@@ -213,4 +213,34 @@ bar {
     }
 }
 
+#
+# Mouse mode
+#
+# https://www.reddit.com/r/swaywm/comments/1fryie4/use_the_numeric_keyboard_keys_as_mouse_in_wayland/
+mode "keycursor" {
+    bindsym Left seat - cursor move -10 0
+    bindsym Down seat - cursor move 0 +10
+    bindsym Up seat - cursor move 0 -10
+    bindsym Right seat - cursor move +10 0
+
+    bindsym Shift+Left seat - cursor move -50 0
+    bindsym Shift+Down seat - cursor move 0 +50
+    bindsym Shift+Up seat - cursor move 0 -50
+    bindsym Shift+Right seat - cursor move +50 0
+
+    bindsym Escape mode "default"
+
+    # Left click
+    bindsym --no-repeat Return seat - cursor press button1
+    bindsym --release Return seat - cursor release button1
+    #bindsym Return exec 'swaymsg seat - cursor press button1 && swaymsg seat - cursor release button1'
+
+    # Right click
+    bindsym --no-repeat Shift+Return seat - cursor press button3
+    bindsym --release Shift+Return seat - cursor release button3
+    #bindsym Shift+Return exec 'swaymsg seat - cursor press button3 && swaymsg seat - cursor release button3'
+}
+bindsym $mod+Shift+m mode "keycursor"
+
+
 include $SOFTWARE/config/sway/config.d/*
