@@ -61,18 +61,24 @@ include $SOFTWARE/config/sway/config-vars.d/*
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.
 
+input "type:keyboard" {
+  xkb_layout us
+  xkb_variant ,nodeadkeys
+  xkb_options altwin:swap_lalt_lwin,caps:swapescape
+}
+
 ### Key bindings
 #
 # Basics:
 #
     # Start a terminal
-    bindsym $mod+Return exec $term
+    bindsym $mod+semicolon exec $term
 
     # Kill focused window
-    bindsym $mod+Shift+q kill
+    bindsym $mod+F4 kill
 
     # Start your launcher
-    bindsym $mod+d exec $menu
+    bindsym $mod+space exec $menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -145,10 +151,10 @@ include $SOFTWARE/config/sway/config-vars.d/*
     bindsym $mod+f fullscreen
 
     # Toggle the current focus between tiling and floating mode
-    bindsym $mod+Shift+space floating toggle
+    bindsym $mod+Shift+Return floating toggle
 
     # Swap focus between the tiling area and the floating area
-    bindsym $mod+space focus mode_toggle
+    bindsym $mod+Return focus mode_toggle
 
     # Move focus to the parent container
     bindsym $mod+a focus parent
