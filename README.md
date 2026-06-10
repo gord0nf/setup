@@ -5,14 +5,25 @@ a setup abstraction over installation managers and configs.
 ## usage
 
 ```bash
+bash ./setup.sh --help
+
 # install if not already installed and configure
 bash ./setup.sh powershell ohmyposh # or any other thing in install/
 
+# or install with a yml config (see below)
+bash ./setup.sh ./my/software.yml
+
+# or install using default yml for user
+bash ./setup.sh
+
+# or install with a specific manager (see below)
+bash ./setup.sh neovim@manual
+
 # or run the install script directly
-bash ./src/setup/ohmyposh.sh <install_dir>
+bash ./install/manual/neovim.sh <install_dir>
 
 # or just configure it (hopefully it's installed!)
-bash ./configs/ohmyposh/config.sh
+bash ./config/ohmyposh.sh
 ```
 
 ### ...but i'm on Windows!
@@ -54,8 +65,9 @@ itself and any meta functions in `managers/{MANAGER}.sh`.
 
 ### yaml config
 
-a yaml config can be supplied (see `examples/`), which is useful because a thing's config script
-can look for vars loaded from yaml config and hook things up differently. yaml configs can extend other yaml configs.
+a yaml config can be supplied (see `examples/`), which is useful because a
+thing's config script can look for vars loaded from yaml config and hook things
+up differently. yaml configs can extend other yaml configs.
 
 if no yaml config is supplied as an arg, `setup.sh` looks for (takes first):
 
@@ -63,4 +75,13 @@ if no yaml config is supplied as an arg, `setup.sh` looks for (takes first):
 - `$SOFTWARE/_data/profiles/$(whoami).yml`
 - `$SOFTWARE/software.yml`
 
-`setup.sh` loads nested yaml config into exported shell variables like `ymlconf_{...}` (see `parse_yaml()` in `utils.sh`), which config scripts can then use.
+`setup.sh` loads nested yaml config into exported shell variables like
+`ymlconf_{...}` (see `parse_yaml()` in `utils.sh`), which config scripts can
+then use.
+
+yaml features:
+
+- extend other yaml configs with `extends` key
+  - can also extend something in the `presets/` dir like
+    `extends: preset:minimal`
+- things in setup can be installed with specific manager like `thing@manager`

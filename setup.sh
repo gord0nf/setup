@@ -38,15 +38,22 @@ has_element() {
 
 set_manager() {
   if [[ -f "$SOFTWARE_ROOT/managers/$1.sh" ]]; then
-    manager=$1
+    main_manager=$1
   else
     return 1
   fi
 }
 
 add_thing() {
-  if [[ -f "$SOFTWARE_ROOT/install/$manager/$1.sh" ]]; then
-    ! has_element things "$1" && things+=("$1")
+  local thing=$1
+  local manager=$main_manager
+  if [[ "$thing" =~ ^(.+)@(.+)$ ]]; then
+    thing=${BASH_REMATCH[1]}
+    manager=${BASH_REMATCH[2]}
+    manager_exceptions[$thing]=$manager
+  fi
+  if [[ -f "$SOFTWARE_ROOT/install/$manager/$thing.sh" ]]; then
+    ! has_element things "$thing" && things+=("$thing")
   else
     return 1
   fi
@@ -100,7 +107,7 @@ use_default_config() {
 
 # parse args --------------------------------------------------------------------------------------
 
-manager=
+main_manager=
 default_yml_config=true
 install=true
 manual_fallback=$(
@@ -111,6 +118,7 @@ things=()
 other_scripts=()
 pre_commands=()
 post_commands=()
+declare -A manager_exceptions # hash table like [thing]=manager
 
 # initial pass to get manager and check whether should use default yml config
 for ((i = 1; i <= $#; i++)); do
@@ -123,13 +131,17 @@ for ((i = 1; i <= $#; i++)); do
     set_manager "$arg" || fatal "invalid manager '$arg'"
     ;;
   --no-default-yml) default_yml_config=false ;;
+  --help | -h)
+    echo "$HELP"
+    exit
+    ;;
   -*) ;;
   *) default_yml_config=false ;; # no default config if doing stuff explicitly
   esac
 done
 
 # if not specified, use first usable manager
-if [[ -z "$manager" ]]; then
+if [[ -z "$main_manager" ]]; then
   log "no manager specified, defaulting to one"
   for manager_script in $(ls "$SOFTWARE_ROOT/managers/"*.sh); do
     [[ "$manager_script" == */manual.sh ]] && continue # save manual for last
@@ -142,19 +154,15 @@ if [[ -z "$manager" ]]; then
       break
     }
   done
-  [[ -z "$manager" ]] && set_manager manual
+  [[ -z "$main_manager" ]] && set_manager manual
 fi
 
-[[ "$manager" == manual ]] && manual_fallback=false
+[[ "$main_manager" == manual ]] && manual_fallback=false
 
 $default_yml_config && use_default_config
 
 while (($# > 0)); do
   case "$1" in
-  --help | -h)
-    echo "$HELP"
-    exit
-    ;;
   --manager | -m)
     shift
     shift
@@ -172,7 +180,7 @@ while (($# > 0)); do
     shift
     ;;
   --all | -a)
-    for f in "$SOFTWARE_ROOT/install/$manager/"*.sh; do
+    for f in "$SOFTWARE_ROOT/install/$main_manager/"*.sh; do
       thing=$(basename -s '.sh' "$f")
       if ! has_element things "$thing"; then
         things+=("$thing")
@@ -223,9 +231,9 @@ if [[ "${#things[@]}" -eq 0 && "${#other_scripts[@]}" -eq 0 ]]; then
   fatal 'nothing to do'
 fi
 
-log "using '$manager' manager"
-source "$SOFTWARE_ROOT/managers/$manager.sh"
-manager_can_use || fatal "cannot use $manager manager on your system"
+log "using '$main_manager' manager"
+source "$SOFTWARE_ROOT/managers/$main_manager.sh"
+manager_can_use || fatal "cannot use $main_manager manager on your system"
 
 for cmd in "${pre_commands[@]}"; do
   eval "$cmd" || fatal 'precommand failed'
@@ -236,11 +244,10 @@ command_exists manager_preinstall && {
   manager_preinstall
 }
 
-echo # style
-
 for thing in "${things[@]}"; do
-  [[ "$thing" != "${things[0]}" ]] && echo # separation line
+  echo # separation line
 
+  manager=${manager_exceptions[$thing]:-$main_manager}
   thing_install="$SOFTWARE_ROOT/install/$manager/$thing.sh"
   thing_manual_install="$SOFTWARE_ROOT/install/manual/$thing.sh"
   thing_config="$SOFTWARE_ROOT/config/$thing.sh"
