@@ -20,7 +20,7 @@ get_download_url() {
     ;;
   mac) prefix='mac\.zip' ;;
   linux)
-    if [[ "$arch" == 'arm' ]]; then
+    if [[ "$arch" == arm* ]]; then
       prefix='arm64\.tar\.xz'
     else
       prefix='x64\.tar\.xz'
