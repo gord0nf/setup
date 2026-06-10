@@ -10,3 +10,4 @@
 - manually specify manager in yml config
 - neovim
   - different key bindings for android vs pc
+- figure out pulseaudio
