@@ -1,6 +1,7 @@
 extends: preset:minimal
 setup:
   - ohmyposh
-  - neovim
+  - nodejs # for neovim lsps
   - ripgrep
+  - neovim
   - smerge

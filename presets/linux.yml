@@ -1,0 +1,7 @@
+extends: preset:minimal
+setup:
+  - foot
+  - sway
+config:
+  sway:
+    startBehavior: prompt
