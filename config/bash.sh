@@ -13,12 +13,12 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 # set ~/.bashrc to source $config_dir/bashrc
 log 'making sure ~/.bashrc sources config'
 sed -i '/#@gord0nf\/software/d' ~/.bashrc &>/dev/null # clean all lines with special comment
-echo ". '$CONFIG/bashrc' #@gord0nf/software" >>~/.bashrc
+echo ". '$CONFIG/.bashrc' #@gord0nf/software" >>~/.bashrc
 
 # set ~/.profile to source $config_dir/bash_profile
 log 'making sure ~/.profile sources config'
 sed -i '/#@gord0nf\/software/d' ~/.profile &>/dev/null # clean all lines with special comment
-echo ". '$CONFIG/bash_profile' #@gord0nf/software" >>~/.profile
+echo ". '$CONFIG/.bash_profile' #@gord0nf/software" >>~/.profile
 
 # install fonts
 log 'installing fonts'
