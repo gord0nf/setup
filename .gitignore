@@ -20,3 +20,6 @@ config/pwsh/Modules/PowerShellGet
 config/pwsh/Modules/PSReadLine
 config/pwsh/Modules/Terminal-Icons
 config/pwsh/Modules/Fonts
+
+# foot
+config/foot/theme.ini
