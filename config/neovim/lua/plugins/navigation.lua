@@ -1,49 +1,41 @@
-local function previous_buf_in_tab()
-  local prev_buf = vim.fn.bufnr('#')
-  return vim.api.nvim_buf_is_valid(prev_buf) and prev_buf > 0
-end
-
 return {
   {
-    'nvim-telescope/telescope.nvim',
-    version = '*',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-    },
+    'ibhagwan/fzf-lua',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
-      defaults = {
-        layout_strategy = 'horizontal',
-        layout_config = {
-          horizontal = {
-            prompt_position = 'top',
-            width = { padding = 0 },
-            height = { padding = 0 },
-            preview_width = 0.5,
-          },
+      winopts = { fullscreen = true },
+      keymap = {
+        builtin = {
+          ['<C-j>'] = 'preview-down',
+          ['<C-k>'] = 'preview-up',
+          ['<C-S-j>'] = 'preview-page-down',
+          ['<C-S-k>'] = 'preview-page-up',
+          ['<C-l>'] = 'toggle-preview-wrap',
+          ['<C-space>'] = 'toggle-preview',
         },
-        sorting_strategy = 'ascending',
       },
     },
     keys = {
-      { '<leader> ', '<cmd>Telescope find_files<cr>', desc = 'Telescope find files' },
-      { '<leader>/', '<cmd>Telescope live_grep<cr>', desc = 'Telescope live grep' },
-      { '<leader>fb', '<cmd>Telescope buffers<cr>', desc = 'Telescope buffers' },
-      { '<leader>fh', '<cmd>Telescope help_tags<cr>', desc = 'Telescope help tags' },
+      { '<leader> ', '<cmd>FzfLua global<cr>', desc = 'Fzf find files' },
+      { '<leader>/', '<cmd>FzfLua live_grep<cr>', desc = 'Fzf live grep' },
       {
         '<leader>fc',
         function()
-          require('telescope.builtin').find_files({ cwd = vim.fn.stdpath('config') })
+          require('fzf-lua').files({ cwd = vim.fn.stdpath('config') })
         end,
-        desc = 'Telescope find config files',
+        desc = 'Fzf find config files',
       },
       {
         '<leader>fs',
         function()
-          require('telescope.builtin').find_files({ cwd = vim.fn.getenv('SOFTWARE') })
+          require('fzf-lua').files({ cwd = vim.fn.getenv('SOFTWARE') })
         end,
-        desc = 'Telescope find software files',
+        desc = 'Fzf find software files',
       },
+      { '<leader>gs', '<cmd>FzfLua git_status<cr>', desc = 'Fzf git status' },
+      { '<leader>gb', '<cmd>FzfLua git_blame<cr>', desc = 'Fzf git blame' },
+      { '<leader>gc', '<cmd>FzfLua git_commits<cr>', desc = 'Fzf git commits' },
+      { '<leader>z', '<cmd>FzfLua spellcheck<cr>', desc = 'Fzf git commits' },
     },
   },
   {
@@ -58,24 +50,6 @@ return {
           synchronize = '<CR>',
           go_in_plus = 'L',
         },
-      })
-      local augroup = vim.api.nvim_create_augroup('mini_files_custom', { clear = true })
-
-      -- Go in plus... in new tab
-      vim.api.nvim_create_autocmd('FileType', {
-        group = augroup,
-        pattern = 'MiniFiles',
-        callback = function(args)
-          local buf_id = args.buf
-          vim.keymap.set('n', 'L', function()
-            MiniFiles.go_in({ close_on_file = true })
-            -- TODO: super slapdash and buggy
-            if previous_buf_in_tab() then
-              vim.api.nvim_command('-tabnew #')
-              vim.api.nvim_command('tabnext')
-            end
-          end, { buffer = buf_id, desc = 'Go in plus (new tab)' })
-        end,
       })
     end,
     keys = {
