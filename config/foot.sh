@@ -16,6 +16,7 @@ make_directory_link "$CONFIG" "$foot_dir"
 
 # extra configuration with env vars ---------------------------------------------------------------
 
+rm "$CONFIG/theme.ini" -f &>/dev/null
 if [[ -v ymlconf_config_foot_theme ]]; then
   ln -s "$CONFIG/themes/$ymlconf_config_foot_theme.ini" "$CONFIG/theme.ini"
 else
