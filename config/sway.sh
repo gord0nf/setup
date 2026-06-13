@@ -16,11 +16,17 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 log "creating directory link from '$sway_dir' to config"
 make_directory_link "$CONFIG" "$sway_dir"
 
-# extra configuration with env vars ---------------------------------------------------------------
+# start behavior configuration --------------------------------------------------------------------
+# ymlconf_config_sway_startBehavior should be login|prompt|manual
 
-log 'applying yaml configuration stuff'
-
-# startBehavior should be login|prompt|manual
-[[ -v ymlconf_config_sway_startBehavior ]] &&
-  set_global_env SWAY_START "$ymlconf_config_sway_startBehavior" ||
-  set_global_env SWAY_START -unset
+for p in .profile .bash_profile .zprofile; do
+  profile="$HOME/$p"
+  log "apply start behavior to $profile"
+  sed -i '/#@gord0nf\/software/d' "$profile" &>/dev/null # clean all lines with special comment
+  case "$ymlconf_config_sway_startBehavior" in
+  login | prompt)
+    echo "SWAY_START=$ymlconf_config_sway_startBehavior bash '$CONFIG/scripts/profile.sh' #@gord0nf/software" \
+      >>"$profile"
+    ;;
+  esac
+done

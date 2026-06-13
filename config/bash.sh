@@ -15,11 +15,6 @@ log 'making sure ~/.bashrc sources config'
 sed -i '/#@gord0nf\/software/d' ~/.bashrc &>/dev/null # clean all lines with special comment
 echo ". '$CONFIG/.bashrc' #@gord0nf/software" >>~/.bashrc
 
-# set ~/.profile to source $config_dir/bash_profile
-log 'making sure ~/.profile sources config'
-sed -i '/#@gord0nf\/software/d' ~/.profile &>/dev/null # clean all lines with special comment
-echo ". '$CONFIG/.bash_profile' #@gord0nf/software" >>~/.profile
-
 # install fonts
 log 'installing fonts'
 bash "$CONFIG/../fonts/install_fonts.sh"

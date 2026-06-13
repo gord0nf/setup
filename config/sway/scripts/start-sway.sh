@@ -14,30 +14,30 @@ export XDG_SESSION_TYPE=wayland
 # We should be attempting to detect an EGL driver instead, but that appears
 # to be a bit more complicated.
 case $(systemd-detect-virt --vm) in
-    "none"|"")
-        ;;
-    "kvm")
-        # There's two drivers we can get here, depending on the 3D acceleration
-        # flag state: either virtio_gpu/virgl or kms_swrast/llvmpipe.
-        #
-        # The former one causes graphical glitches in OpenGL apps when using
-        # 'pixman' renderer. The latter will crash 'gles2' renderer outright.
-        # Neither of those support 'vulkan'.
-        #
-        # The choice is obvious, at least until we learn to detect the driver
-        # instead of abusing the virtualization technology identifier.
-        #
-        # See also: https://gitlab.freedesktop.org/wlroots/wlroots/-/issues/2871
-        export WLR_RENDERER=pixman
-        # 'pixman' on virtio_gpu with recent kernels is glitchy. Appears that
-        # it only affects atomic KMS, and legacy interface works.
-        export WLR_DRM_NO_ATOMIC=1
-        # WLR_NO_HARDWARE_CURSORS=1 is not needed with legacy DRM interface
-        ;;
-    *)
-        # https://github.com/swaywm/sway/issues/6581
-        export WLR_NO_HARDWARE_CURSORS=1
-        ;;
+"none" | "")
+  ;;
+"kvm")
+  # There's two drivers we can get here, depending on the 3D acceleration
+  # flag state: either virtio_gpu/virgl or kms_swrast/llvmpipe.
+  #
+  # The former one causes graphical glitches in OpenGL apps when using
+  # 'pixman' renderer. The latter will crash 'gles2' renderer outright.
+  # Neither of those support 'vulkan'.
+  #
+  # The choice is obvious, at least until we learn to detect the driver
+  # instead of abusing the virtualization technology identifier.
+  #
+  # See also: https://gitlab.freedesktop.org/wlroots/wlroots/-/issues/2871
+  export WLR_RENDERER=pixman
+  # 'pixman' on virtio_gpu with recent kernels is glitchy. Appears that
+  # it only affects atomic KMS, and legacy interface works.
+  export WLR_DRM_NO_ATOMIC=1
+  # WLR_NO_HARDWARE_CURSORS=1 is not needed with legacy DRM interface
+  ;;
+*)
+  # https://github.com/swaywm/sway/issues/6581
+  export WLR_NO_HARDWARE_CURSORS=1
+  ;;
 esac
 
 ## Apply `environment.d(5)` customizations
@@ -51,18 +51,18 @@ set +o allexport
 
 ## Load Sway-specific system environment customizations
 if [ -f /etc/sway/environment ]; then
-    set -o allexport
-    # shellcheck source=/dev/null
-    . /etc/sway/environment
-    set +o allexport
+  set -o allexport
+  # shellcheck source=/dev/null
+  . /etc/sway/environment
+  set +o allexport
 fi
 
 ## Load Sway-specific user environment customizations
 if [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/sway/environment" ]; then
-    set -o allexport
-    # shellcheck source=/dev/null
-    . "${XDG_CONFIG_HOME:-$HOME/.config}/sway/environment"
-    set +o allexport
+  set -o allexport
+  # shellcheck source=/dev/null
+  . "${XDG_CONFIG_HOME:-$HOME/.config}/sway/environment"
+  set +o allexport
 fi
 
 ## Unexport internal variables
@@ -72,12 +72,11 @@ unset SWAY_EXTRA_ARGS
 
 ## Log all exported WLR_ variables
 if _WLR_VARS=$(env | grep '^WLR_'); then
-    printf 'environment variables for wlroots: %s' "$_WLR_VARS" |
-        tr '\n' ' ' |
-        systemd-cat -p notice -t "${_SWAY_COMMAND##*/}"
+  printf 'environment variables for wlroots: %s' "$_WLR_VARS" |
+    tr '\n' ' ' |
+    systemd-cat -p notice -t "${_SWAY_COMMAND##*/}"
 fi
 
 # Start sway with extra arguments and send output to the journal
 # shellcheck disable=SC2086 # quoted expansion of EXTRA_ARGS can produce empty field
 exec systemd-cat -- $_SWAY_COMMAND $_SWAY_EXTRA_ARGS "$@"
-
