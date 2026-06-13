@@ -1,4 +1,37 @@
-# note: this is similar to config/bash/aliases.sh, but more mobile oriented
+export ZSH_CONFIG=${0:A:h}
+export SOFTWARE="$(realpath "$ZSH_CONFIG/../../")" # @gord0nf/software specific
+
+# env vars ----------------------------------------------------------------------------------------
+
+if [[ -f "$HOME/.env" ]]; then
+  set -a
+  source "$HOME/.env"
+  set +a
+fi
+
+# oh-my-zsh configuration -------------------------------------------------------------------------
+
+export ZSH="$HOME/.oh-my-zsh"
+
+ZSH_THEME="powerlevel10k/powerlevel10k"
+
+plugins=(
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+)
+
+source $ZSH/oh-my-zsh.sh
+
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#663399,standout"
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE="20"
+ZSH_AUTOSUGGEST_USE_ASYNC=1
+
+# prettier ----------------------------------------------------------------------------------------
+
+PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/nodejs/prettierrc.json"
+
+# aliases -----------------------------------------------------------------------------------------
 
 # Basic cmd line utils
 alias -g ll='ls -alh --color=auto'

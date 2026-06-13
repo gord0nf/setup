@@ -15,11 +15,8 @@ ${APT:-apt} install -y zsh || fatal 'install failed'
 if item_exists "$install_dir"; then
   if ! $FORCE; then
     warn "something's already at '$install_dir'"
-    read -p "want to replace it? (y/n) [n] " yn
-    case $yn in
-    [Yy]*) ;;
-    *) exit 1 ;;
-    esac
+    read -p "want to replace it? (y/n) [n] " yn -r 1
+    [[ "$yn" == [Yy]* ]] || fatal 'aborted'
   fi
   rm -fr "$install_dir"
 fi

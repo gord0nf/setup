@@ -10,7 +10,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 
 ! $FORCE && ! command_exists zsh && fatal 'not installed'
 
-# set ~/.zshrc to source $config_dir/zshrc.sh
+# set ~/.zshrc to source $config_dir/.zshrc
 log 'making sure ~/.zshrc sources config'
 sed -i '/#@gord0nf\/software/d' "$HOME/.zshrc" &>/dev/null # clean all lines with special comment
-echo ". '$CONFIG/zshrc.sh' #@gord0nf/software" >>"$HOME/.zshrc"
+echo ". '$CONFIG/.zshrc' #@gord0nf/software" >>"$HOME/.zshrc"
