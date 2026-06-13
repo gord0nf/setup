@@ -3,10 +3,16 @@
   - github-cli
   - vscode
   - firefox (with profiles)
+  - fzf
+  - tmux
+- bsh/zsh/powershell/pwsh
+  - option to manually disable external tools (like omp) in yml
 - setup.sh force use default software.yml
-- split stdout to log file
-- clear screen after each thing
 - setup.sh arg to ignore failled things
+- cli style
+  - split stdout to log file
+  - clear screen after each thing
 - neovim
-  - different key bindings for android vs pc
+  - componentalize and make configurable by yml
 - figure out pulseaudio
+- standardiz XDG stuff and make sure dirs exist
