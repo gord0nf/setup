@@ -4,7 +4,7 @@
   - vscode
   - firefox (with profiles)
   - fzf
-  - tmux
+  - **tmux**
 - bsh/zsh/powershell/pwsh
   - option to manually disable external tools (like omp) in yml
 - setup.sh force use default software.yml
@@ -14,5 +14,6 @@
   - clear screen after each thing
 - neovim
   - componentalize and make configurable by yml
+  - fzf instead of rg
 - figure out pulseaudio
 - standardiz XDG stuff and make sure dirs exist

@@ -225,6 +225,15 @@ fi
 # add SOFTWARE_ROOT to path to expose setup.sh
 add_global_path "$SOFTWARE_ROOT"
 
+# make sure login shell is correct, if yml-configured
+if [[ $(get_os) != windows && -v ymlconf_config_loginShell ]]; then
+  login_shell=$(basename $(getent passwd $(whoami) | cut -d: -f7))
+  if [[ "$login_shell" != "$ymlconf_config_loginShell" ]]; then
+    log "changing login shell to $ymlconf_config_loginShell"
+    chsh -s "$(which "$ymlconf_config_loginShell")"
+  fi
+fi
+
 # run scripts -------------------------------------------------------------------------------------
 
 if [[ "${#things[@]}" -eq 0 && "${#other_scripts[@]}" -eq 0 ]]; then
