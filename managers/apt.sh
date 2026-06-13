@@ -13,7 +13,7 @@ manager_can_use() {
   }
 }
 
-if [[ "$install" != 'false' ]]; then
+if [[ "$config_only" != true ]]; then
   manager_preinstall() {
     $APT update || {
       if [[ $APT != sudo* && $EUID -ne 0 ]]; then

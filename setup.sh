@@ -2,15 +2,24 @@
 
 SOFTWARE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 SOFTWARE_DATA=$SOFTWARE_ROOT/_data
-HELP=$'usage: setup.sh [opts] ...(things or setup scripts or yaml config)
+HELP=$'usage: setup.sh [opts] ...(things or setup scripts or yaml configs)
+
+By default, failed installs fallback to the `manual` manager.
+
+By default, the default yaml config is loaded. However, if things, scripts, or other yml configs
+are passed as args or --no-default-yml-things, anything under under yml `setup:` is not run (but
+yml `config:` settings stay). However, if --no-default-yml is passed, nothing from the default
+yaml is loaded.
 
 options:
- -c, --config-only   only run the config script for the things
- -f, --force         runs install/config scripts even if already installed/configed and doesn\'t ask before overwriting stuff
- -a, --all           runs scripts for anything that can be installed with the manager used
- -m, --manager <mgr> run install script using a specific manager, defaults to first available
- --no-fallback       do not fall back to the manual manager if install fails
- --no-default-yml    do not look for and use any yml configs other than explictly specified'
+ -c, --config-only       only run the config script for the things
+ -f, --force             runs install/config scripts even if already installed/configed and doesn\'t ask before overwriting stuff
+ -a, --all               runs scripts for anything that can be installed with the manager used
+ -m, --manager <mgr>     run install script using a specific manager, defaults to first available
+ -F, --fail              fatal exit if any install or config fails
+ --no-fallback           do not fall back to the manual manager if install fails
+ --no-default-yml        do not look for and use any yml configs other than explictly specified
+ --no-default-yml-things load default yaml but do not use any things under `setup`'
 
 # utils
 source "$SOFTWARE_ROOT/utils.sh" || {
@@ -32,24 +41,17 @@ is_script() {
 
 has_element() {
   local -n arr=$1
-  local el=$2
-  [[ " ${arr[*]} " =~ [[:space:]]${el}[[:space:]] ]]
+  [[ " ${arr[*]} " =~ [[:space:]]$2[[:space:]] ]]
 }
 
 set_manager() {
-  if [[ -f "$SOFTWARE_ROOT/managers/$1.sh" ]]; then
-    main_manager=$1
-  else
-    return 1
-  fi
+  [[ -f "$SOFTWARE_ROOT/managers/$1.sh" ]] && main_manager=$1
 }
 
 add_thing() {
-  local thing=$1
-  local manager=$main_manager
+  local thing=$1 manager=$main_manager
   if [[ "$thing" =~ ^(.+)@(.+)$ ]]; then
-    thing=${BASH_REMATCH[1]}
-    manager=${BASH_REMATCH[2]}
+    thing=${BASH_REMATCH[1]} manager=${BASH_REMATCH[2]}
     manager_exceptions[$thing]=$manager
   fi
   if [[ -f "$SOFTWARE_ROOT/install/$manager/$thing.sh" ]]; then
@@ -61,6 +63,8 @@ add_thing() {
 }
 
 load_yml_config() {
+  local path=$1 no_things=${2:-false}
+
   # first look for other configs to extend
   while IFS= read -r extended; do
     if [[ "$extended" =~ ^preset:(.+)$ ]]; then
@@ -69,16 +73,20 @@ load_yml_config() {
     else
       case "$extended" in
       /* | ~/*) ;;
-      *) extended="$(dirname "$1")/$extended" ;;
+      *) extended="$(dirname "$path")/$extended" ;;
       esac
     fi
-    load_yml_config "$extended"
-  done < <(parse_yaml_noctx "$1" | sed -nE "s/^extends(_[0-9]+)?='(.+)'$/\\2/p")
+    load_yml_config "$extended" $no_things
+  done < <(parse_yaml_noctx "$path" | sed -n -E "s/^extends(_[0-9]+)?='(.+)'$/\\2/p")
 
-  export $(parse_yaml "$1" ymlconf_ | xargs -L 1) || fatal "couldn't parse yaml at $1"
-  for key in $(yaml_array_keys ymlconf_setup_); do
-    add_thing "${!key}" || warn "couldn't load install '${!key}' in $1 (thing $i)"
-  done
+  # parse everything
+  export $(parse_yaml "$path" ymlconf_ | xargs -L 1) || fatal "couldn't parse yaml at $path"
+
+  if ! $no_things; then
+    for key in $(yaml_array_keys ymlconf_setup_); do
+      add_thing "${!key}" || warn "couldn't load install '${!key}' in $path"
+    done
+  fi
 }
 
 use_default_config() {
@@ -101,42 +109,55 @@ use_default_config() {
 
   ! [[ -z "$yml_config" ]] && {
     log "using config at $yml_config"
-    load_yml_config "$yml_config"
+    load_yml_config "$yml_config" $no_default_yml_things
   }
 }
 
+# -------------------------------------------------------------------------------------------------
 # parse args --------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+
+# parse options ----------------------------------------------------------
 
 main_manager=
-default_yml_config=true
-install=true
+config_only=false
+all_things=false
+no_default_yml=false
+no_default_yml_things=false
 manual_fallback=$(
   source "$SOFTWARE_ROOT/managers/manual.sh"
   manager_can_use &>/dev/null && echo true || echo false
 )
-things=()
-other_scripts=()
-pre_commands=()
-post_commands=()
-declare -A manager_exceptions # hash table like [thing]=manager
+fail=false
+is_test=false
 
-# initial pass to get manager and check whether should use default yml config
+# pass to get manager
 for ((i = 1; i <= $#; i++)); do
   arg=${!i}
   case "$arg" in
+  --help | -h)
+    echo "$HELP"
+    exit
+    ;;
   --manager | -m)
     ((i++))
     arg=${!i}
     [[ -z "$arg" ]] && fatal 'expected arg for --manager'
     set_manager "$arg" || fatal "invalid manager '$arg'"
     ;;
-  --no-default-yml) default_yml_config=false ;;
-  --help | -h)
-    echo "$HELP"
-    exit
+  --no-default-yml) no_default_yml=true ;;
+  --no-default-yml-things) no_default_yml_things=true ;;
+  --no-fallback) manual_fallback=false ;;
+  --config-only | -c) config_only=true ;;
+  --force | -f) export FORCE=true ;;
+  --fail | -F) fail=true ;;
+  --all | -a) all_things=true ;;
+  --test) is_test=true ;;
+  -*)
+    echo "$HELP" >&2
+    exit 1
     ;;
-  -*) ;;
-  *) default_yml_config=false ;; # no default config if doing stuff explicitly
+  *) no_default_yml_things=true ;;
   esac
 done
 
@@ -157,41 +178,32 @@ if [[ -z "$main_manager" ]]; then
   [[ -z "$main_manager" ]] && set_manager manual
 fi
 
-[[ "$main_manager" == manual ]] && manual_fallback=false
+log "using '$main_manager' manager"
+source "$SOFTWARE_ROOT/managers/$main_manager.sh"
+manager_can_use || fatal "cannot use $main_manager manager on your system"
 
-$default_yml_config && use_default_config
+# parse main things ------------------------------------------------------
+
+things=()
+other_scripts=()
+pre_commands=()
+post_commands=()
+declare -A manager_exceptions # hash table like [thing]=manager
+
+# if set, load default config
+! $no_default_yml && use_default_config
+
+# if set, add all things (under main_manager)
+$all_things &&
+  for f in "$SOFTWARE_ROOT/install/$main_manager/"*.sh; do
+    thing=$(basename -s '.sh' "$f")
+    ! has_element things "$thing" && things+=("$thing")
+  done
 
 while (($# > 0)); do
   case "$1" in
-  --manager | -m)
-    shift
-    shift
-    ;;
-  --no-fallback)
-    manual_fallback=false
-    shift
-    ;;
-  --config-only | -c)
-    install=false
-    shift
-    ;;
-  --force | -f)
-    export FORCE=true
-    shift
-    ;;
-  --all | -a)
-    for f in "$SOFTWARE_ROOT/install/$main_manager/"*.sh; do
-      thing=$(basename -s '.sh' "$f")
-      if ! has_element things "$thing"; then
-        things+=("$thing")
-      fi
-    done
-    shift
-    ;;
-  -*)
-    echo "$HELP" >&2
-    exit 1
-    ;;
+  --manager | -m) shift ;;
+  -*) ;;
   *)
     if is_script "$1"; then
       ! has_element other_scripts "$1" && other_scripts+=("$1")
@@ -203,15 +215,34 @@ while (($# > 0)); do
         echo # style
       }
     fi
-    shift
     ;;
   esac
+  shift
 done
 
-# create dir for installed things
-if ! [[ -d "$SOFTWARE_DATA/installed" ]]; then
-  mkdir "$SOFTWARE_DATA/installed"
+# post processing --------------------------------------------------------
+
+if $is_test; then
+  echo -e "things (${#things[@]}): ${things[@]}\n"
+  echo -e "other_scripts (${#other_scripts[@]}): ${other_scripts[@]}\n"
+  echo 'config:'
+  env | grep ^ymlconf_config_
+  exit
 fi
+
+[[ "${#things[@]}" -eq 0 && "${#other_scripts[@]}" -eq 0 ]] && fatal 'nothing to do'
+
+# -------------------------------------------------------------------------------------------------
+# run stuff ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+
+# create necessary dirs
+mkdir -p "$SOFTWARE_DATA/installed" "${XDG_CONFIG_HOME:-$HOME/.config}"
+
+# extra stuff to do before -----------------------------------------------
+
+# add SOFTWARE_ROOT to path to expose setup.sh
+add_global_path "$SOFTWARE_ROOT"
 
 # if windows, set shell-agnostic $SOFTWARE env var (needed for configs of some windows things)
 if [[ $(get_os) == windows ]] && command_exists powershell; then
@@ -222,9 +253,6 @@ if [[ $(get_os) == windows ]] && command_exists powershell; then
   )" || warn "couldn't set SOFTWARE sys env var, some Windows things might be iffy"
 fi
 
-# add SOFTWARE_ROOT to path to expose setup.sh
-add_global_path "$SOFTWARE_ROOT"
-
 # make sure login shell is correct, if yml-configured
 if [[ $(get_os) != windows && -v ymlconf_config_loginShell ]]; then
   login_shell=$(basename $(getent passwd $(whoami) | cut -d: -f7))
@@ -234,15 +262,7 @@ if [[ $(get_os) != windows && -v ymlconf_config_loginShell ]]; then
   fi
 fi
 
-# run scripts -------------------------------------------------------------------------------------
-
-if [[ "${#things[@]}" -eq 0 && "${#other_scripts[@]}" -eq 0 ]]; then
-  fatal 'nothing to do'
-fi
-
-log "using '$main_manager' manager"
-source "$SOFTWARE_ROOT/managers/$main_manager.sh"
-manager_can_use || fatal "cannot use $main_manager manager on your system"
+# preinstall -------------------------------------------------------------
 
 for cmd in "${pre_commands[@]}"; do
   eval "$cmd" || fatal 'precommand failed'
@@ -250,39 +270,49 @@ done
 
 command_exists manager_preinstall && {
   log 'running manager preinstall script'
-  manager_preinstall
+  manager_preinstall || fatal 'manager preinstall failed'
 }
+
+# run main things --------------------------------------------------------
+
+$fail && fail_cmd=fatal 'halt' || fail_cmd=continue
 
 for thing in "${things[@]}"; do
   echo # separation line
 
   manager=${manager_exceptions[$thing]:-$main_manager}
   thing_install="$SOFTWARE_ROOT/install/$manager/$thing.sh"
-  thing_manual_install="$SOFTWARE_ROOT/install/manual/$thing.sh"
   thing_config="$SOFTWARE_ROOT/config/$thing.sh"
   thing_install_dir="$SOFTWARE_DATA/installed/$thing"
 
-  if $install; then
+  thing_manual_install=
+  $manual_fallback && [[ $manager != manual ]] &&
+    thing_manual_install="$SOFTWARE_ROOT/install/manual/$thing.sh"
+
+  # install thing
+  if ! $config_only; then
     log "$thing: installing"
-    bash "$thing_install" "$thing_install_dir" && log_result "$thing install" || {
-      if $manual_fallback && [[ -f "$thing_manual_install" ]]; then
+    bash "$thing_install" "$thing_install_dir"
+    log_result "$thing install" # preserves exit code
+    if [[ $? -ne 0 ]]; then
+      if [ -f "$thing_manual_install" ]; then
         warn "$thing install failed, falling back to manual install"
-        bash "$thing_manual_install" "$thing_install_dir" && log_result "$thing install" || {
-          log_result "$thing install"
-          continue
-        }
+        bash "$thing_manual_install" "$thing_install_dir"
+        log_result "$thing install"# preserves exit code
+        [[ $? -eq 0 ]] || $fail_cmd
       else
-        log_result "$thing install"
-        continue
+        $fail_cmd
       fi
-    }
+    fi
   fi
 
+  # configure thing
   if [[ -e "$thing_config" ]]; then
     log "$thing: configuring"
     bash "$thing_config"
     log_result "$thing config"
-  elif ! $install; then
+    [[ $? -eq 0 ]] || $fail_cmd
+  elif $config_only; then
     log "no config for $thing"
   fi
 done
@@ -291,8 +321,11 @@ for script in "${other_scripts[@]}"; do
   log "script: $script"
   bash "$script" ''
   log_result "$script"
+  [[ $? -eq 0 ]] || $fail_cmd
   echo # style
 done
+
+# postinstall ------------------------------------------------------------
 
 for cmd in "${post_commands[@]}"; do
   eval "$cmd" || fatal 'postcommand failed'

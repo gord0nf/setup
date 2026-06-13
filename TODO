@@ -7,10 +7,8 @@
   - **tmux**
 - bsh/zsh/powershell/pwsh
   - option to manually disable external tools (like omp) in yml
-- setup.sh force use default software.yml
-- setup.sh arg to ignore failled things
 - cli style
-  - split stdout to log file
+  - tee stdout to log file
   - clear screen after each thing
 - neovim
   - componentalize and make configurable by yml

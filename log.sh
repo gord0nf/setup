@@ -15,11 +15,13 @@ log() {
 }
 
 log_result() {
+  local exit_code=$?
   printf "$PREFIX$(
-    [ $? -eq 0 ] &&
+    [ $exit_code -eq 0 ] &&
       echo " \033[32m%s success" ||
       echo " \033[31m%s failed"
   )\033[0m\n" "$*" >&2
+  return $exit_code
 }
 
 warn() {
