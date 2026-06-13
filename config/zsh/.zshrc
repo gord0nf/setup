@@ -6,26 +6,6 @@ command_exists() {
   command -v "$1" &>/dev/null
 }
 
-# history
-HISTFILE=~/.zsh_history
-HISTSIZE=100000
-SAVEHIST=100000
-setopt HIST_SAVE_NO_DUPS
-setopt INC_APPEND_HISTORY
-
-# directory stack
-setopt AUTO_PUSHD
-setopt PUSHD_IGNORE_DUPS
-setopt PUSHD_SILENT
-
-# keybindings
-bindkey -e # emacs
-bindkey "\e[A" history-beginning-search-backward
-bindkey "\e[B" history-beginning-search-forward
-
-setopt autocd # navigation
-autoload -U compinit; compinit # autocomplete
-
 # env vars ----------------------------------------------------------------------------------------
 
 if [[ -f "$HOME/.env" ]]; then
@@ -33,6 +13,31 @@ if [[ -f "$HOME/.env" ]]; then
   source "$HOME/.env"
   set +a
 fi
+
+# zinit -------------------------------------------------------------------------------------------
+
+# installation
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+source "${ZINIT_HOME}/zinit.zsh"
+
+# plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-autosuggestions
+
+# zsh settings -----------------------------------------------------------------------------------
+
+# history
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+
+bindkey -e # emacs
+setopt autocd # navigation
+autoload -U compinit; compinit # autocomplete
 
 # oh-my-posh --------------------------------------------------------------------------------------
 
@@ -52,20 +57,9 @@ alias -g ll='ls -alh --color=auto'
 alias -g la='ls -A --color=auto'
 alias -g l='ll -CF'
 alias -g ls='ls --color=auto'
-alias -g grep='grep --color=auto'
-alias -g fgrep='fgrep --color=auto'
-alias -g egrep='egrep --color=auto'
-
-# File operations
-alias -g mkdir='mkdir -pv'
-alias -g rmdir='rmdir -v'
 
 # Pretty print PATH
 path() { echo "${PATH//:/$'\n'}"; }
-
-# Common software shortcuts
-alias -g nv='nvim'
-alias -g py='python'
 
 # Git shortcuts
 alias -g gl='git lg'
@@ -81,14 +75,11 @@ alias -g grc='git rebase --continue'
 alias -g gd='git diff'
 alias -g gco='git checkout'
 
-# System information shortcuts
-alias -g df='df -h'
-alias -g du='du -h'
-alias -g free='free -h'
+# Common software shortcuts
+alias -g nv='nvim'
+alias -g py='python'
 alias -g ps='ps aux'
 alias -g top='htop'
-
-# Other dev utils
 alias -g server='python -m http.server 8000'
 alias -g uploadserver='python -m uploadserver 8000'
 alias -g ports='netstat -tuln'
