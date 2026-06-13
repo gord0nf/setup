@@ -3,5 +3,5 @@ setup:
   - ohmyposh
   - nodejs # for neovim lsps
   - ripgrep
-  - neovim
-  - smerge
+  - neovim@manual # apt usually has outdated
+  - smerge@manual # only supported with manual
