@@ -142,5 +142,14 @@ vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { desc = 'Normal mode from terminal 
 vim.keymap.set('t', '<Esc><Esc><Esc>', '<Esc>', { noremap = true, silent = true, desc = 'Esc within terminal mode' })
 
 -- Floating terminal
-local FTermnial = require('custom.fterminal')
-vim.keymap.set('n', '<leader>;', FTermnial.toggle, { noremap = true, silent = true, desc = 'Toggle floating terminal' })
+if Settings.floating_terminal then
+  local FTermnial = require('custom.fterminal')
+  vim.keymap.set(
+    'n',
+    '<leader>;',
+    FTermnial.toggle,
+    { noremap = true, silent = true, desc = 'Toggle floating terminal' }
+  )
+else
+  vim.keymap.set('n', '<leader>;', '<cmd>terminal<cr>i', { noremap = true, silent = true, desc = 'Spwan terminal' })
+end

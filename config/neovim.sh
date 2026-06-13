@@ -33,6 +33,10 @@ echo "Settings = {}" >"$settings"
   log 'applying flash'
   echo "Settings.flash = true" >>"$settings"
 }
+[[ "$ymlconf_config_neovim_floatingTerminal" == true ]] && {
+  log 'applying floating terminal'
+  echo "Settings.floating_terminal = true" >>"$settings"
+}
 [[ -v ymlconf_config_neovim_theme ]] && {
   log 'applying theme'
   echo "Settings.theme = '$ymlconf_config_neovim_theme'" >>"$settings"
