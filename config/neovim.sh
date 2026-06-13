@@ -23,18 +23,27 @@ for nvim_dir in "${default_nvim_dirs[@]}"; do
   fi
 done
 
-# extra configuration with env vars ---------------------------------------------------------------
+# extra configuration -----------------------------------------------------------------------------
+# by creating a settings.lua file that is imported by neovim config
 
-[[ -v ymlconf_config_neovim_theme ]] &&
-  set_global_env NVIM_THEME "$ymlconf_config_neovim_theme" ||
-  set_global_env NVIM_THEME -unset
+settings="$CONFIG/lua/settings.lua"
+echo "Settings = {}" >"$settings"
 
-[[ "$ymlconf_config_neovim_flash" == true ]] &&
-  set_global_env NVIM_FLASH 1 ||
-  set_global_env NVIM_FLASH -unset
+[[ "$ymlconf_config_neovim_flash" == true ]] && {
+  log 'applying flash'
+  echo "Settings.flash = true" >>"$settings"
+}
+[[ -v ymlconf_config_neovim_theme ]] && {
+  log 'applying theme'
+  echo "Settings.theme = '$ymlconf_config_neovim_theme'" >>"$settings"
+}
 
 langs=
 for key in $(yaml_array_keys ymlconf_config_neovim_langs_); do
-  langs+="${!key}:"
+  langs+="'${!key}',"
 done
-set_global_env NVIM_LANGS "${langs%?}"
+! [[ -z "$langs" ]] && {
+  log 'applying langs'
+  echo "Settings.langs = { ${langs%?} }" >>"$settings"
+}
+exit 0

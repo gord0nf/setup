@@ -109,7 +109,7 @@ local plugins = {
   { 'tpope/vim-surround' },
 }
 
-if os.getenv('NVIM_FLASH') then
+if Settings.flash then
   table.insert(plugins, {
     'folke/flash.nvim',
     event = 'VeryLazy',

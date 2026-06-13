@@ -23,4 +23,4 @@ local function set_theme(colorscheme)
   end
 end
 
-set_theme(os.getenv('NVIM_THEME') or 'habamax')
+set_theme(Settings.theme or 'habamax')

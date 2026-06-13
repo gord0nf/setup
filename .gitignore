@@ -9,6 +9,7 @@ software.yml
 # neovim
 **/lazy-lock.json
 **/lazyvim.json
+config/neovim/lua/settings.lua
 
 # winterm
 config/winterm/state.json
