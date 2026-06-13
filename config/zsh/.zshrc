@@ -1,6 +1,31 @@
 export ZSH_CONFIG=${0:A:h}
 export SOFTWARE="$(realpath "$ZSH_CONFIG/../../")" # @gord0nf/software specific
 
+# zsh settings ------------------------------------------------------------------------------------
+
+# history
+HISTFILE=~/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+setopt HIST_SAVE_NO_DUPS
+setopt INC_APPEND_HISTORY
+
+# Configure the push directory stack (most people don't need this)
+setopt AUTO_PUSHD
+setopt PUSHD_IGNORE_DUPS
+setopt PUSHD_SILENT
+
+# Emacs keybindings
+bindkey -e
+bindkey "\e[A" history-beginning-search-backward
+bindkey "\e[B" history-beginning-search-forward
+
+# Move to directories without cd
+setopt autocd
+
+# Initialize completion
+autoload -U compinit; compinit
+
 # env vars ----------------------------------------------------------------------------------------
 
 if [[ -f "$HOME/.env" ]]; then
@@ -8,24 +33,6 @@ if [[ -f "$HOME/.env" ]]; then
   source "$HOME/.env"
   set +a
 fi
-
-# oh-my-zsh configuration -------------------------------------------------------------------------
-
-export ZSH="$HOME/.oh-my-zsh"
-
-ZSH_THEME="powerlevel10k/powerlevel10k"
-
-plugins=(
-  git
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-)
-
-source $ZSH/oh-my-zsh.sh
-
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#663399,standout"
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE="20"
-ZSH_AUTOSUGGEST_USE_ASYNC=1
 
 # prettier ----------------------------------------------------------------------------------------
 
