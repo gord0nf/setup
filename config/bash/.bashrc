@@ -1,4 +1,5 @@
 export BASH_CONFIG=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
+export PROFILE="$BASH_CONFIG/.bashrc"
 export SOFTWARE="$(realpath "$BASH_CONFIG/../../")" # @gord0nf/software specific
 
 export TERM=xterm-256color

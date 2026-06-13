@@ -1,4 +1,5 @@
 export ZSH_CONFIG=${0:A:h}
+export PROFILE="$ZSH_CONFIG/.zshrc"
 export SOFTWARE="$(realpath "$ZSH_CONFIG/../../")" # @gord0nf/software specific
 
 # zsh settings ------------------------------------------------------------------------------------
