@@ -26,7 +26,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
 
-# zsh settings -----------------------------------------------------------------------------------
+# zsh settings ------------------------------------------------------------------------------------
 
 # history
 HISTFILE=~/.zsh_history
@@ -38,6 +38,12 @@ setopt HIST_IGNORE_ALL_DUPS
 bindkey -e # emacs
 setopt autocd # navigation
 autoload -U compinit; compinit # autocomplete
+
+# fzf ---------------------------------------------------------------------------------------------
+
+if command_exists fzf; then
+  source <(fzf --zsh)
+fi
 
 # oh-my-posh --------------------------------------------------------------------------------------
 
