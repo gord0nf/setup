@@ -2,7 +2,9 @@ export ZSH_CONFIG=${0:A:h}
 export PROFILE="$ZSH_CONFIG/.zshrc"
 export SOFTWARE="$(realpath "$ZSH_CONFIG/../../")" # @gord0nf/software specific
 
-# zsh settings ------------------------------------------------------------------------------------
+command_exists() {
+  command -v "$1" &>/dev/null
+}
 
 # history
 HISTFILE=~/.zsh_history
@@ -11,21 +13,18 @@ SAVEHIST=100000
 setopt HIST_SAVE_NO_DUPS
 setopt INC_APPEND_HISTORY
 
-# Configure the push directory stack (most people don't need this)
+# directory stack
 setopt AUTO_PUSHD
 setopt PUSHD_IGNORE_DUPS
 setopt PUSHD_SILENT
 
-# Emacs keybindings
-bindkey -e
+# keybindings
+bindkey -e # emacs
 bindkey "\e[A" history-beginning-search-backward
 bindkey "\e[B" history-beginning-search-forward
 
-# Move to directories without cd
-setopt autocd
-
-# Initialize completion
-autoload -U compinit; compinit
+setopt autocd # navigation
+autoload -U compinit; compinit # autocomplete
 
 # env vars ----------------------------------------------------------------------------------------
 
@@ -33,6 +32,13 @@ if [[ -f "$HOME/.env" ]]; then
   set -a
   source "$HOME/.env"
   set +a
+fi
+
+# oh-my-posh --------------------------------------------------------------------------------------
+
+if command_exists oh-my-posh; then
+  conf="$SOFTWARE/config/ohmyposh/${OMP_THEME:-half-life}.omp.json"
+  [[ -f "$conf" ]] && eval "$(oh-my-posh init zsh --config "$conf")"
 fi
 
 # prettier ----------------------------------------------------------------------------------------
@@ -44,19 +50,13 @@ PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/nodejs/prettierrc.json"
 # Basic cmd line utils
 alias -g ll='ls -alh --color=auto'
 alias -g la='ls -A --color=auto'
-alias -g l='ls -CF --color=auto'
+alias -g l='ll -CF'
 alias -g ls='ls --color=auto'
-alias -g ..='cd ..'
-alias -g ...='cd ../..'
-alias -g ....='cd ../../..'
 alias -g grep='grep --color=auto'
 alias -g fgrep='fgrep --color=auto'
 alias -g egrep='egrep --color=auto'
 
 # File operations
-alias -g rm="rm -i"
-alias -g mv="mv -i"
-alias -g cp="cp -i"
 alias -g mkdir='mkdir -pv'
 alias -g rmdir='rmdir -v'
 
@@ -92,4 +92,3 @@ alias -g top='htop'
 alias -g server='python -m http.server 8000'
 alias -g uploadserver='python -m uploadserver 8000'
 alias -g ports='netstat -tuln'
-alias -g myip='curl -s ifconfig.me && echo'
