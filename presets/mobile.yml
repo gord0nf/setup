@@ -2,7 +2,7 @@ extends: preset:minimal
 setup:
   - zsh
   - neovim
-  - ripgrep
+  - fzf
   - python
 config:
   loginShell: zsh

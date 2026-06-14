@@ -2,6 +2,6 @@ extends: preset:minimal
 setup:
   - ohmyposh
   - nodejs # for neovim lsps
-  - ripgrep
+  - fzf
   - neovim@manual # apt usually has outdated
   - smerge@manual # only supported with manual

@@ -1,6 +1,5 @@
 extends: [preset:linux, preset:dev]
 setup:
   - zsh
-  - fzf
 config:
   loginShell: zsh
