@@ -27,3 +27,6 @@ config/foot/theme.ini
 
 # tmux
 config/tmux/plugins
+
+# sway
+config/sway/custom.d

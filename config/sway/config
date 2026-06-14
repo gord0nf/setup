@@ -243,3 +243,4 @@ bindsym $mod+Shift+m mode "keycursor"
 
 
 include $SOFTWARE/config/sway/config.d/*
+include $SOFTWARE/config/sway/custom.d/*
