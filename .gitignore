@@ -24,3 +24,6 @@ config/pwsh/Modules/Fonts
 
 # foot
 config/foot/theme.ini
+
+# tmux
+config/tmux/plugins
