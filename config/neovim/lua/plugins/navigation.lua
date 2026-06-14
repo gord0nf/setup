@@ -36,6 +36,8 @@ local plugins = {
       { '<leader>gb', '<cmd>FzfLua git_blame<cr>', desc = 'Fzf git blame' },
       { '<leader>gc', '<cmd>FzfLua git_commits<cr>', desc = 'Fzf git commits' },
       { '<leader>z', '<cmd>FzfLua spellcheck<cr>', desc = 'Fzf git commits' },
+      { '<leader>xx', '<cmd>FzfLua diagnostics_workspace<cr>', desc = 'Fzf git commits' },
+      { '<leader>xb', '<cmd>FzfLua diagnostics_document<cr>', desc = 'Fzf git commits' },
     },
   },
   {

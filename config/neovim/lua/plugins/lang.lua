@@ -150,6 +150,9 @@ local plugins = {
             vim.opt_local.foldmethod = 'expr'
             vim.opt_local.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
           end
+          vim.opt.foldlevel = 99
+          vim.o.foldlevelstart = 99
+          vim.o.foldcolumn = 'auto:3'
 
           vim.schedule(function()
             -- Only run normal if we're not in terminal mode
