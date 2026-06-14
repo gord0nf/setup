@@ -30,6 +30,10 @@
     - tmux, neovim, sway interoptability and same-key nav
     - tmux session management
       - workspace as code like https://confuzeus.com/posts/tmux-workflow/
+      - tmux-resurrect/tmux-continuum
+    - tmux fzf
   - universal root loops theme
-  - sway backgrounds
-  - sway mod as alt
+  - sway personalization
+    - swaybg 
+    - waybar
+    - better bindings (e.g. with alt)

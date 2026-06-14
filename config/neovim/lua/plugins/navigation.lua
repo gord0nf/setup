@@ -1,4 +1,4 @@
-return {
+local plugins = {
   {
     'ibhagwan/fzf-lua',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
@@ -63,3 +63,31 @@ return {
     },
   },
 }
+
+if Settings.tmux ~= false then
+  table.insert(plugins, {
+    'christoomey/vim-tmux-navigator',
+    cmd = {
+      'TmuxNavigateLeft',
+      'TmuxNavigateDown',
+      'TmuxNavigateUp',
+      'TmuxNavigateRight',
+      'TmuxNavigatePrevious',
+      'TmuxNavigatorProcessList',
+    },
+    keys = {
+      { '<c-h>', '<cmd><C-U>TmuxNavigateLeft<cr>' },
+      { '<c-j>', '<cmd><C-U>TmuxNavigateDown<cr>' },
+      { '<c-k>', '<cmd><C-U>TmuxNavigateUp<cr>' },
+      { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
+      { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
+    },
+  })
+else
+  vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = 'Move to left window' })
+  vim.keymap.set('n', '<C-j>', '<C-w>j', { desc = 'Move to bottom window' })
+  vim.keymap.set('n', '<C-k>', '<C-w>k', { desc = 'Move to top window' })
+  vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = 'Move to right window' })
+end
+
+return plugins

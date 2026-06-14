@@ -33,6 +33,10 @@ echo "Settings = {}" >"$settings"
   log 'applying flash'
   echo "Settings.flash = true" >>"$settings"
 }
+[[ "$ymlconf_config_neovim_tmux" == false ]] && {
+  log 'applying tmux'
+  echo "Settings.tmux = false" >>"$settings"
+}
 [[ "$ymlconf_config_neovim_floatingTerminal" == true ]] && {
   log 'applying floating terminal'
   echo "Settings.floating_terminal = true" >>"$settings"
