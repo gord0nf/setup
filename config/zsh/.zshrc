@@ -79,33 +79,33 @@ PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/nodejs/prettierrc.json"
 # aliases -----------------------------------------------------------------------------------------
 
 # Basic cmd line utils
-alias -g ll='ls -alh --color=auto'
-alias -g la='ls -A --color=auto'
-alias -g l='ll -CF'
-alias -g ls='ls --color=auto'
+alias -r ll='ls -alh --color=auto'
+alias -r la='ls -A --color=auto'
+alias -r l='ll -CF'
+alias -r ls='ls --color=auto'
 
 # Pretty print PATH
 path() { echo "${PATH//:/$'\n'}"; }
 
 # Git shortcuts
-alias -g gl='git lg'
-alias -g gbl='branch -a'
-alias -g gs='git status'
-alias -g ga='git add'
-alias -g gc='git commit'
-alias -g gagc='git add . && git commit'
-alias -g gps='git push'
-alias -g gpl='git pull'
-alias -g grb='git rebase'
-alias -g grc='git rebase --continue'
-alias -g gd='git diff'
-alias -g gco='git checkout'
+alias -r gl='git lg'
+alias -r gbl='branch -a'
+alias -r gs='git status'
+alias -r ga='git add'
+alias -r gc='git commit'
+alias -r gagc='git add . && git commit'
+alias -r gps='git push'
+alias -r gpl='git pull'
+alias -r grb='git rebase'
+alias -r grc='git rebase --continue'
+alias -r gd='git diff'
+alias -r gco='git checkout'
 
 # Common software shortcuts
-alias -g nv='nvim'
-alias -g py='python'
-alias -g ps='ps aux'
-alias -g top='htop'
-alias -g server='python -m http.server 8000'
-alias -g uploadserver='python -m uploadserver 8000'
-alias -g ports='netstat -tuln'
+alias -r nv='nvim'
+alias -r py='python'
+alias -r ps='ps aux'
+alias -r top='htop'
+alias -r server='python -m http.server 8000'
+alias -r uploadserver='python -m uploadserver 8000'
+alias -r ports='netstat -tuln'
