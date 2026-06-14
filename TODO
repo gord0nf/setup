@@ -1,17 +1,35 @@
-- add software:
-  - ffmpeg
-  - github-cli
-  - vscode
-  - firefox (with profiles)
-  - fzf
-  - **tmux**
-- bsh/zsh/powershell/pwsh
-  - option to manually disable external tools (like omp) in yml
-- cli style
-  - tee stdout to log file
-  - clear screen after each thing
-- neovim
-  - componentalize and make configurable by yml
-  - fzf instead of rg
-- figure out pulseaudio
-- standardiz XDG stuff and make sure dirs exist
+- general
+  - add software:
+    - ffmpeg
+    - github-cli
+    - vscode
+    - firefox (with profiles)
+    - fzf@manual
+    - psmux for windows
+  - bsh/zsh/powershell/pwsh
+    - option to manually disable external tools (like omp) in yml
+  - zsh remove inline aliase expansion
+  - zsh/bash ctrl backspace and arrow compatiblity
+  - cli style
+    - tee stdout to log file
+    - clear screen after each thing
+  - neovim
+    - componentalize and make configurable by yml
+  - figure out pulseaudio
+  - standardiz XDG stuff and make sure dirs exist
+  - yml configurable system settings
+    - TERMINAL
+    - SHELL
+    - EDITOR/VISUAL
+- v2.0
+  - standard nvim/tmux/sway workflow
+    - tmux (with tpm)
+    - nvim
+      - debloat; minimize plugins
+      - tmux stuff for running code, like https://smartbear.com/blog/tmux-and-vim/
+    - tmux, neovim, sway interoptability and same-key nav
+    - tmux session management
+      - workspace as code like https://confuzeus.com/posts/tmux-workflow/
+  - universal root loops theme
+  - sway backgrounds
+  - sway mod as alt
