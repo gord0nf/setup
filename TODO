@@ -30,7 +30,7 @@
       - workspace as code like https://confuzeus.com/posts/tmux-workflow/
       - tmux-resurrect/tmux-continuum
     - tmux fzf
-  - universal root loops theme
+  - universal theme
   - sway personalization
     - swaybg 
     - waybar
@@ -38,3 +38,4 @@
   - zsh/bash shortcuts
     - zsh, remove inline aliase expansion
     - ctrl backspace and arrow compatiblity
+  - switch from foot to alacritty
