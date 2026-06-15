@@ -211,9 +211,9 @@ set_global_env() {
 
   if [[ "$3" == "-a"* ]]; then
     export "$name"="${!name}$value"
-    grep -qE "^$name\\+=" "$GLOBAL_ENV" &&
-      sed -i "/^$name+=/s/$/$value/" "$GLOBAL_ENV" ||
-      echo "$name+=$value" >>"$GLOBAL_ENV"
+    existing_line=$(grep -oE -m 1 "^$name\\+=.*$" "$GLOBAL_ENV") &&
+      sed -i "/^$name+=/d" "$GLOBAL_ENV"
+    echo "$name+=${existing_line#*=}$value" >>"$GLOBAL_ENV"
   elif [[ "$2" == '-u'* ]]; then
     export "$name"=
     sed -i "/^$name=/d" "$GLOBAL_ENV"
@@ -404,30 +404,30 @@ function parse_yaml_noctx {
 
 # parse_yaml that is aware of existing array context
 function parse_yaml {
-    local prefix=$2
-    local separator=${3:-_}
-    local array_var_regex="^$prefix(.+)$separator([0-9]+)$"
+  local prefix=$2
+  local separator=${3:-_}
+  local array_var_regex="^$prefix(.+)$separator([0-9]+)$"
 
   local output=$(parse_yaml_noctx "$@")
 
-    while IFS='=' read -r var value; do
-        if [[ $var =~ $array_var_regex ]]; then
-            local list_name="${BASH_REMATCH[1]}"
-            local curr_idx="${BASH_REMATCH[2]}"
+  while IFS='=' read -r var value; do
+    if [[ $var =~ $array_var_regex ]]; then
+      local list_name="${BASH_REMATCH[1]}"
+      local curr_idx="${BASH_REMATCH[2]}"
 
-            local start_idx=1
-            while [[ -v "$prefix$list_name$separator$start_idx" ]]; do 
-              ((start_idx++))
-            done
+      local start_idx=1
+      while [[ -v "$prefix$list_name$separator$start_idx" ]]; do
+        ((start_idx++))
+      done
 
-            if [[ $start_idx -gt 1 ]]; then
-                local new_idx=$((start_idx + curr_idx - 1))
-                var="$prefix$list_name$separator$new_idx"
-            fi
+      if [[ $start_idx -gt 1 ]]; then
+        local new_idx=$((start_idx + curr_idx - 1))
+        var="$prefix$list_name$separator$new_idx"
+      fi
 
-        fi
-        echo "$var=$value"
-    done <<< "$output"
+    fi
+    echo "$var=$value"
+  done <<<"$output"
 }
 
 # list all keys of yml array. parse_yaml() already kinda does this but if you load multiple ymls, the base variable gets overridden.

@@ -233,6 +233,11 @@ fi
 # add SOFTWARE_ROOT to path to expose setup.sh
 add_global_path "$SOFTWARE_ROOT"
 
+# custom scripts dir
+script_dir="${XDG_CONFIG_HOME:-$HOME/.config}/scripts"
+[[ -d "$script_dir" ]] || make_directory_link "$SOFTWARE_ROOT/config/scripts" "$script_dir"
+add_global_path "$script_dir"
+
 # if windows, set shell-agnostic $SOFTWARE env var (needed for configs of some windows things)
 if [[ $(get_os) == windows ]] && command_exists powershell; then
   powershell -NoProfile -Command "[System.Environment]::SetEnvironmentVariable(

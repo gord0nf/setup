@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if command -v swaybg &>/dev/null; then
+
+  wallpaper_dir=${WALLPAPERS:-$HOME/.local/share/wallpapers}/$1
+  [[ -f "$1" ]] && wallpaper=$1 || wallpaper=$(find "$wallpaper_dir" -type f | shuf -n 1)
+
+  echo $(realpath --relative-to="$wallpaper_dir" "$wallpaper")
+  [ -n "$TMUX" ] && runner='tmux run-shell' || runner=eval
+  $runner "swaymsg \"output * bg \"$wallpaper\" fill\""
+
+fi
