@@ -3,3 +3,6 @@ setup:
   - pwsh
   - winterm
   - powertoys
+config:
+  terminal: wt
+  loginShell: pwsh

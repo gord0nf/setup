@@ -5,3 +5,5 @@ setup:
   - fzf
   - neovim@manual # apt usually has outdated
   - smerge@manual # only supported with manual
+config:
+  editor: nvim

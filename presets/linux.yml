@@ -5,3 +5,4 @@ setup:
 config:
   sway:
     startBehavior: prompt
+  terminal: foot

@@ -1,16 +1,13 @@
 [general]
 import = ["theme.toml"]
 
-[env]
-TERM                  = "xterm-256color"
-
 [window]
 decorations           = "None"
 opacity               = 0.87
-blur                  = true
 
 [scrolling]
-history               = 65535
+history               = 10000
+multiplier            = 0
 
 [font]
 normal                = { family = "0xProto Nerd Font", style = "Regular" }

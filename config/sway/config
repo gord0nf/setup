@@ -11,7 +11,7 @@ set $left h
 set $down j
 set $up k
 set $right l
-set $term foot
+set $term ${TERM:-foot}
 set $menu wmenu-run
 
 include $SOFTWARE/config/sway/config-vars.d/*

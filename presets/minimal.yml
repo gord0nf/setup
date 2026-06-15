@@ -3,3 +3,5 @@ setup:
   - git
   - powershell
   - vim
+config:
+  editor: vim

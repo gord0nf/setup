@@ -230,17 +230,6 @@ if $is_test; then
   exit
 fi
 
-[[ "${#things[@]}" -eq 0 && "${#other_scripts[@]}" -eq 0 ]] && fatal 'nothing to do'
-
-# -------------------------------------------------------------------------------------------------
-# run stuff ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------------
-
-# create necessary dirs
-mkdir -p "$SOFTWARE_DATA/installed" "${XDG_CONFIG_HOME:-$HOME/.config}"
-
-# extra stuff to do before -----------------------------------------------
-
 # add SOFTWARE_ROOT to path to expose setup.sh
 add_global_path "$SOFTWARE_ROOT"
 
@@ -253,14 +242,31 @@ if [[ $(get_os) == windows ]] && command_exists powershell; then
   )" || warn "couldn't set SOFTWARE sys env var, some Windows things might be iffy"
 fi
 
-# make sure login shell is correct, if yml-configured
-if [[ $(get_os) != windows && -v ymlconf_config_loginShell ]]; then
-  login_shell=$(basename $(getent passwd $(whoami) | cut -d: -f7))
-  if [[ "$login_shell" != "$ymlconf_config_loginShell" ]]; then
-    log "changing login shell to $ymlconf_config_loginShell"
-    chsh -s "$(which "$ymlconf_config_loginShell")"
+# root yml config stuff --------------------------------------------------
+
+[[ -v ymlconf_config_terminal ]] && set_global_env TERM "$ymlconf_config_terminal"
+[[ -v ymlconf_config_editor ]] && set_global_env EDITOR "$(which "$ymlconf_config_editor")"
+
+if [[ -v ymlconf_config_loginShell ]]; then
+  shell_path=$(which "$ymlconf_config_loginShell")
+  if [[ $(get_os) != windows ]]; then
+    login_shell=$(basename $(getent passwd $(whoami) | cut -d: -f7))
+    if [[ "$login_shell" != "$ymlconf_config_loginShell" ]]; then
+      log "changing login shell to $ymlconf_config_loginShell"
+      chsh -s "$shell_path"
+    fi
   fi
+  set_global_env SHELL "$shell_path"
 fi
+
+# -------------------------------------------------------------------------------------------------
+# run stuff ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+
+[[ "${#things[@]}" -eq 0 && "${#other_scripts[@]}" -eq 0 ]] && fatal 'nothing to do'
+
+# create necessary dirs
+mkdir -p "$SOFTWARE_DATA/installed" "${XDG_CONFIG_HOME:-$HOME/.config}"
 
 # preinstall -------------------------------------------------------------
 
