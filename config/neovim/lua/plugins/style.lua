@@ -130,6 +130,12 @@ if Settings.theme == 'vscode' then
       })
     end,
   })
+elseif Settings.theme:find('github', 1, true) == 1 then
+  table.insert(plugins, {
+    'projekt0n/github-nvim-theme',
+    name = 'github-theme',
+    opts = { options = { transparent = true } },
+  })
 end
 
 return plugins

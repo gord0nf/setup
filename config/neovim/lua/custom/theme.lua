@@ -9,11 +9,6 @@ local THEMES = {
   unokai = true,
 }
 
-local colorschemes = {}
-for colorscheme, _ in pairs(THEMES) do
-  table.insert(colorschemes, colorscheme)
-end
-
 local function set_theme(colorscheme)
   vim.cmd.colorscheme(colorscheme)
   if THEMES[colorscheme] then
