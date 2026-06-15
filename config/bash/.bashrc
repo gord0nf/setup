@@ -16,6 +16,10 @@ command_exists() {
   command -v "$1" &>/dev/null
 }
 
+workon() {
+  ~/.config/scripts/tmux-$1
+}
+
 # env vars --------------------------------------------------------------------------------------------
 
 if [[ -f "$HOME/.env" ]]; then
