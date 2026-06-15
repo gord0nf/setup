@@ -3,14 +3,21 @@ local plugins = {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
-      options = {
-        globalstatus = true,
-      },
       sections = {
         lualine_c = {
           {
+            function()
+              local reg = vim.fn.reg_recording()
+              if reg ~= '' then
+                return 'Recording @' .. reg
+              end
+              return ''
+            end,
+            color = { bg = 'black', fg = 'white', gui = 'bold' },
+          },
+          {
             'filename',
-            file_status = false,
+            file_status = true,
             path = 1,
           },
         },
@@ -49,6 +56,10 @@ local plugins = {
         },
       },
     },
+    init = function()
+      vim.opt.cmdheight = 0
+      vim.opt.showmode = false
+    end,
   },
   { 'brenoprata10/nvim-highlight-colors' },
   {
