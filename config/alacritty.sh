@@ -22,3 +22,10 @@ for dir in "${default_dirs[@]}"; do
     make_directory_link "$CONFIG" "$dir"
   fi
 done
+
+rm "$CONFIG/theme.toml" -f &>/dev/null
+if [[ -v ymlconf_config_alacritty_theme ]]; then
+  ln -s "$CONFIG/themes/$ymlconf_config_alacritty_theme.toml" "$CONFIG/theme.toml"
+else
+  touch "$CONFIG/theme.toml" # blank file so include doesn't fail
+fi

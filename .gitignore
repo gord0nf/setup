@@ -25,6 +25,9 @@ config/pwsh/Modules/Fonts
 # foot
 config/foot/theme.ini
 
+# alacritty
+config/alacritty/theme.toml
+
 # tmux
 config/tmux/plugins
 
