@@ -42,6 +42,10 @@ bindkey -e # emacs
 setopt autocd # navigation
 autoload -U compinit; compinit # autocomplete
 
+bindkey '\e[1;5D' backward-word
+bindkey '\e[1;5C' forward-word
+bindkey '^H' backward-kill-word
+
 # fzf ---------------------------------------------------------------------------------------------
 
 if command_exists fzf; then

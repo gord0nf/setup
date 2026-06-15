@@ -40,9 +40,9 @@ vim.keymap.set('v', '<', '<gv', { desc = 'Indent left and reselect' })
 vim.keymap.set('v', '>', '>gv', { desc = 'Indent right and reselect' })
 
 -- Delete words with ctrl backspace
-vim.cmd('imap <C-BS> <C-W>')
+vim.cmd('imap <C-BS> <C-w>')
 vim.cmd('noremap! <C-BS> <C-w>')
-vim.cmd('noremap! <C-h> <C-w>')
+vim.cmd('inoremap <C-h> <C-w>')
 
 -- Get and copy file path
 vim.keymap.set('n', '<leader>pa', function()

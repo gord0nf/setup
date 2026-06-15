@@ -7,6 +7,11 @@ export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
 export LANG="en_US.UTF-8"
 
+bind '"\e[5C": forward-word'
+bind '"\e[5D": backward-word'
+bind '"\e[1;5C": forward-word'
+bind '"\e[1;5D": backward-word'
+
 command_exists() {
   command -v "$1" &>/dev/null
 }
