@@ -7,7 +7,7 @@ command_exists() {
 }
 
 workon() {
-  ~/.config/scripts/tmux/$1
+  ~/.config/scripts/tmux-$1
 }
 
 # env vars ----------------------------------------------------------------------------------------
@@ -30,6 +30,8 @@ source "${ZINIT_HOME}/zinit.zsh"
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
 command_exists fzf && zinit light Aloxaf/fzf-tab
+
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 bindkey '^L' autosuggest-accept
 
