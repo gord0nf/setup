@@ -232,7 +232,7 @@ fi
 
 # custom scripts dir
 script_dir="${XDG_CONFIG_HOME:-$HOME/.config}/scripts"
-[[ -d "$script_dir" ]] || make_directory_link "$SOFTWARE_ROOT/config/scripts" "$script_dir"
+[[ -d "$script_dir" ]] || make_directory_link "$SOFTWARE_ROOT/scripts" "$script_dir"
 add_global_path "$script_dir"
 
 # if windows, set shell-agnostic $SOFTWARE env var (needed for configs of some windows things)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
 scriptroot=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-software=$(realpath $scriptroot/../..)
+software=$(realpath $scriptroot/..)
 
 "$software/setup.sh" "$@"
