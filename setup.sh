@@ -230,9 +230,6 @@ if $is_test; then
   exit
 fi
 
-# add SOFTWARE_ROOT to path to expose setup.sh
-add_global_path "$SOFTWARE_ROOT"
-
 # custom scripts dir
 script_dir="${XDG_CONFIG_HOME:-$HOME/.config}/scripts"
 [[ -d "$script_dir" ]] || make_directory_link "$SOFTWARE_ROOT/config/scripts" "$script_dir"
