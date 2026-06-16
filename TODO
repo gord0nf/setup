@@ -30,7 +30,13 @@
   - sway personalization
     - swaybg 
     - waybar
+    - fuzzel launcher
     - better bindings (e.g. with alt)
   - zsh/bash shortcuts
     - zsh, remove inline aliase expansion
     - ctrl backspace and arrow compatiblity
+- v2.1
+  - practical linux applications
+    - pulseaudio
+    - media player
+    - brave browser

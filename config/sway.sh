@@ -18,9 +18,13 @@ make_directory_link "$CONFIG" "$sway_dir"
 
 # env var config ----------------------------------------------------------------------------------
 
+[[ -v ymlconf_config_sway_menu ]] &&
+  set_global_env SWAYMENU "$ymlconf_config_sway_menu" ||
+  set_global_env SWAYMENU -unset
+
 [[ -v ymlconf_config_sway_bar ]] &&
   set_global_env SWAYBAR "$ymlconf_config_sway_bar" ||
-  set_global_env SWAYBAR swaybar
+  set_global_env SWAYBAR -unset
 
 # start behavior configuration --------------------------------------------------------------------
 # ymlconf_config_sway_startBehavior should be login|prompt|manual

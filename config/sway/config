@@ -12,7 +12,8 @@ set $down j
 set $up k
 set $right l
 set $term ${TERM:-foot}
-set $menu wmenu-run
+set $menu ${SWAYMENU:-wmenu-run}
+set $bar ${SWAYBAR:-swaybar}
 
 include $SOFTWARE/config/sway/config-vars.d/*
 
@@ -212,7 +213,7 @@ bar {
         inactive_workspace #32323200 #32323200 #5c5c5c
     }
 }
-exec ${SWAYBAR:-swaybar}
+exec $bar
 
 # window style
 default_border pixel
