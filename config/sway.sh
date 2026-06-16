@@ -16,6 +16,12 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 log "creating directory link from '$sway_dir' to config"
 make_directory_link "$CONFIG" "$sway_dir"
 
+# env var config ----------------------------------------------------------------------------------
+
+[[ -v ymlconf_config_sway_bar ]] &&
+  set_global_env SWAYBAR "$ymlconf_config_sway_bar" ||
+  set_global_env SWAYBAR swaybar
+
 # start behavior configuration --------------------------------------------------------------------
 # ymlconf_config_sway_startBehavior should be login|prompt|manual
 
