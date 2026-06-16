@@ -88,4 +88,16 @@ if Settings.flash then
   })
 end
 
+if Settings.tmux ~= false then
+  table.insert(plugins, {
+    'preservim/vimux',
+    keys = {
+      { '<leader>vp', '<cmd>VimuxPromptCommand<cr>', desc = 'Vimux prompt cmd' },
+      { '<leader>vl', '<cmd>VimuxRunLastCommand<cr>', desc = 'Vimux run last' },
+      { '<leader>vi', '<cmd>VimuxInspectRunner<cr>', desc = 'Vimux inspect runner' },
+      { '<leader>vz', '<cmd>VimuxZoomRunner<cr>', desc = 'Vimux zoom runner' },
+    },
+  })
+end
+
 return plugins
