@@ -86,7 +86,8 @@ make_directory_link() {
   if item_exists "$link"; then
     if ! $FORCE; then
       echo "mklink: something's already at link '$link'"
-      read -p "mklink: want to replace it? (y/n) [n] " yn
+      read -n 1 -p "mklink: want to replace it? (y/n) [n] " yn
+      echo
       case $yn in
       [Yy]*) ;;
       *) exit 1 ;;
@@ -174,7 +175,8 @@ atomic_download_and_extract() {
 
   if item_exists "$outdir" && ! $FORCE; then
     echo "extract: something's already at outdir '$outdir'"
-    read -p "extract: want to replace it? (y/n) [n] " yn
+    read -n 1 -p "extract: want to replace it? (y/n) [n] " yn
+    echo
     case $yn in
     [Yy]*) ;;
     *) exit 1 ;;
