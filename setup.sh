@@ -244,6 +244,11 @@ if [[ $(get_os) == windows ]] && command_exists powershell; then
   )" || warn "couldn't set SOFTWARE sys env var, some Windows things might be iffy"
 fi
 
+# if linux, some basic bin dirs, just in case
+for d in '/usr/local/bin/' "$HOME/.local/bin" "$HOME/bin"; do
+  mkdir -p "$d" && add_global_path "$d"
+done
+
 # root yml config stuff --------------------------------------------------
 
 [[ -v ymlconf_config_terminal ]] && set_global_env TERM "$ymlconf_config_terminal"
