@@ -1,4 +1,4 @@
-# dev configuration
+# setup: config-driven dev setup
 
 a setup abstraction over installation managers and configs.
 
