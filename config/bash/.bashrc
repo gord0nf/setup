@@ -70,3 +70,8 @@ alias du='du -h'
 alias free='free -h'
 alias ps='ps aux'
 alias top='htop'
+
+# linux cmds that require sudo
+alias apt='sudo apt'
+alias systemctl='sudo systemctl'
+alias light='sudo light'

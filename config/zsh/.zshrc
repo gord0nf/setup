@@ -122,3 +122,8 @@ alias -r top='htop'
 alias -r server='python -m http.server 8000'
 alias -r uploadserver='python -m uploadserver 8000'
 alias -r ports='netstat -tuln'
+
+# linux cmds that require sudo
+alias -r apt='sudo apt'
+alias -r systemctl='sudo systemctl'
+alias -r light='sudo light'
