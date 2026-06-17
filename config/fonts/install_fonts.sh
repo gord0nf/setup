@@ -2,7 +2,7 @@
 
 fonts=$(find "$(dirname "${BASH_SOURCE[0]}")" -type f \( -name "*.ttf" -o -name "*.otf" \))
 [[ "$EUID" -eq 0 ]] && fontdir=/usr/share/fonts || fontdir=$HOME/.local/share/fonts
-mkdir -p "$dest" &>/dev/null
+mkdir -p "$fontdir"
 
 for font in $fonts; do
   dest="$fontdir/$(basename "$font")"
