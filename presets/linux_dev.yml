@@ -1,5 +1,6 @@
 extends: [preset:linux, preset:dev]
 setup:
   - zsh
+  - linuxutils
 config:
   loginShell: zsh
