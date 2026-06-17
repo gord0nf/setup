@@ -26,6 +26,7 @@ config/pwsh/Modules/Fonts
 
 # foot
 config/foot/theme.ini
+config/foot/font.ini
 
 # alacritty
 config/alacritty/theme.toml

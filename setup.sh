@@ -253,8 +253,8 @@ fi
 # set wallpaper dir
 if ! [[ -v WALLPAPERS ]]; then
   case $(get_os) in
-    windows) set_global_env WALLPAPERS "$APPDATA/wallpapers";;
-    *) set_global_env WALLPAPERS "${XDG_DATA_HOME:-$HOME/.local/share}/wallpapers"
+  windows) set_global_env WALLPAPERS "$APPDATA/wallpapers" ;;
+  *) set_global_env WALLPAPERS "${XDG_DATA_HOME:-$HOME/.local/share}/wallpapers" ;;
   esac
 fi
 mkdir -p "$WALLPAPERS"
@@ -263,6 +263,9 @@ mkdir -p "$WALLPAPERS"
 
 [[ -v ymlconf_config_terminal ]] && set_global_env TERM "$ymlconf_config_terminal"
 [[ -v ymlconf_config_editor ]] && set_global_env EDITOR "$(which "$ymlconf_config_editor")"
+[[ -v ymlconf_config_fontsize ]] && set_global_env FONT_SIZE "$ymlconf_config_fontsize"
+[[ -v ymlconf_config_font ]] && set_global_env FONT "$ymlconf_config_font" ||
+  set_global_env FONT "0xProto Nerd Font"
 
 if [[ -v ymlconf_config_loginShell ]] && command_exists "$ymlconf_config_loginShell"; then
   shell_path=$(which "$ymlconf_config_loginShell")
