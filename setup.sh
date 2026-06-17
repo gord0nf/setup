@@ -230,6 +230,12 @@ if $is_test; then
   exit
 fi
 
+# if linux, some basic dir stuff, just in case
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}" "${XDG_DATA_HOME:-$HOME/.local/share}"
+for d in '/usr/local/bin/' "$HOME/.local/bin" "$HOME/bin"; do
+  mkdir -p "$d" && add_global_path "$d"
+done
+
 # custom scripts dir
 script_dir="${XDG_CONFIG_HOME:-$HOME/.config}/scripts"
 [[ -d "$script_dir" ]] || make_directory_link "$SOFTWARE_ROOT/scripts" "$script_dir"
@@ -243,11 +249,6 @@ if [[ $(get_os) == windows ]] && command_exists powershell; then
     [System.EnvironmentVariableTarget]::User
   )" || warn "couldn't set SOFTWARE sys env var, some Windows things might be iffy"
 fi
-
-# if linux, some basic bin dirs, just in case
-for d in '/usr/local/bin/' "$HOME/.local/bin" "$HOME/bin"; do
-  mkdir -p "$d" && add_global_path "$d"
-done
 
 # set wallpaper dir
 if ! [[ -v WALLPAPERS ]]; then
@@ -263,7 +264,7 @@ mkdir -p "$WALLPAPERS"
 [[ -v ymlconf_config_terminal ]] && set_global_env TERM "$ymlconf_config_terminal"
 [[ -v ymlconf_config_editor ]] && set_global_env EDITOR "$(which "$ymlconf_config_editor")"
 
-if [[ -v ymlconf_config_loginShell ]]; then
+if [[ -v ymlconf_config_loginShell ]] && command_exists "$ymlconf_config_loginShell"; then
   shell_path=$(which "$ymlconf_config_loginShell")
   if [[ $(get_os) != windows ]]; then
     login_shell=$(basename $(getent passwd $(whoami) | cut -d: -f7))
