@@ -1,3 +1,3 @@
 #!/bin/bash
 
-${APT:-apt} install -y sway wl-clipboard libglib2.0-bin brightnessctl brightness-udev
+${APT:-apt} install -y sway swayidle swaylock wl-clipboard libglib2.0-bin brightnessctl brightness-udev
