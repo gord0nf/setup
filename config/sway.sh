@@ -11,10 +11,14 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 [[ $(get_os) != 'windows' ]] || fatal "sway is for linux (os=windows)"
 ! $FORCE && ! command_exists sway && fatal 'not installed'
 
-# dir link for config
-[[ $EUID -eq 0 ]] && sway_dir=/etc/sway || sway_dir=$HOME/.config/sway
+[[ $EUID -eq 0 ]] && sway_dir=/etc/sway || sway_dir=${XDG_CONFIG_HOME:-$HOME/.config}/sway
 log "creating directory link from '$sway_dir' to config"
 make_directory_link "$CONFIG" "$sway_dir"
+
+# swaylock
+swaylock_dir="${XDG_CONFIG_HOME:-$HOME/.config}/swaylock"
+log "creating directory link from '$swaylock_dir' to swaylock config"
+make_directory_link "$CONFIG/../swaylock" "$swaylock_dir"
 
 # env var config ----------------------------------------------------------------------------------
 
