@@ -13,7 +13,7 @@ set $up k
 set $right l
 set $term ${TERM:-foot}
 set $menu ${SWAYMENU:-wmenu-run}
-set $bar ${SWAYBAR:-swaybar}
+set $bar ${SWAYBAR:-swaybar -b bar-0}
 
 include $SOFTWARE/config/sway/config-vars.d/*
 
