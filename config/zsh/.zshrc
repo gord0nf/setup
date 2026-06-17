@@ -33,8 +33,6 @@ command_exists fzf && zinit light Aloxaf/fzf-tab
 
 zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
-bindkey '^L' autosuggest-accept
-
 # zsh settings ------------------------------------------------------------------------------------
 
 # history
@@ -44,13 +42,18 @@ SAVEHIST=10000
 setopt SHARE_HISTORY
 setopt HIST_IGNORE_ALL_DUPS
 
+# bindings
 bindkey -e # emacs
-setopt autocd # navigation
-autoload -U compinit; compinit # autocomplete
-
 bindkey '\e[1;5D' backward-word
 bindkey '\e[1;5C' forward-word
 bindkey '^H' backward-kill-word
+
+# navigation
+setopt autocd
+
+# autocomplete (case-insensitive)
+autoload -U compinit; compinit 
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 # fzf ---------------------------------------------------------------------------------------------
 
