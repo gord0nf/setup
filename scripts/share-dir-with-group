@@ -1,0 +1,12 @@
+#!/bin/bash
+
+dir=$1 group=$2
+
+[[ -d "$dir" ]] || {
+  echo "no such dir: $dir" >&2
+  exit 1
+}
+
+chgrp "$group" "$dir" -R
+chmod g+rw "$dir" -R
+find "$dir" -type d -exec chmod g+sx {} \;
