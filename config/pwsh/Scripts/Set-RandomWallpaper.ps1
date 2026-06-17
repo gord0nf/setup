@@ -1,15 +1,20 @@
 if (-not $IsWindows) {
   throw "This script is only supported on Windows."
 }
-$ThemeDir = "$env:APPDATA\Microsoft\Windows\Themes"
+
+$WallpapersDir = if ("$env:WALLPAPERS") {
+  "$env:WALLPAPERS"
+} else {
+  "$env:APPDATA\wallpapers"
+}
 
 param (
   [ValidateScript({
-      $WallpaperThemes = Get-ChildItem "$ThemeDir\wallpapers" -Directory | Select-Object -ExpandProperty Name
+      $WallpaperThemes = Get-ChildItem "$WallpapersDir" -Directory | Select-Object -ExpandProperty Name
       $_ -in $WallpaperThemes
     })]
   [string]$Theme = ($WallpaperThemes | Get-Random)
 )
 
-Set-Wallpaper "$(Get-ChildItem "$ThemeDir\wallpapers\$Theme" | Select-Object -ExpandProperty FullName | Get-Random)"
+Set-Wallpaper "$(Get-ChildItem "$WallpapersDir\$Theme" | Select-Object -ExpandProperty FullName | Get-Random)"
 

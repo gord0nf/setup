@@ -249,6 +249,15 @@ for d in '/usr/local/bin/' "$HOME/.local/bin" "$HOME/bin"; do
   mkdir -p "$d" && add_global_path "$d"
 done
 
+# set wallpaper dir
+if ! [[ -v WALLPAPERS ]]; then
+  case $(get_os) in
+    windows) set_global_env WALLPAPERS "$APPDATA/wallpapers";;
+    *) set_global_env WALLPAPERS "${XDG_DATA_HOME:-$HOME/.local/share}/wallpapers"
+  esac
+fi
+mkdir -p "$WALLPAPERS"
+
 # root yml config stuff --------------------------------------------------
 
 [[ -v ymlconf_config_terminal ]] && set_global_env TERM "$ymlconf_config_terminal"
