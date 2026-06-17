@@ -29,14 +29,43 @@ make_directory_link "$CONFIG" "$sway_dir"
 # start behavior configuration --------------------------------------------------------------------
 # ymlconf_config_sway_startBehavior should be login|prompt|manual
 
-for p in .profile .bash_profile .zprofile; do
-  profile="$HOME/$p"
-  log "apply start behavior to $profile"
-  sed -i '/#@gord0nf\/software/d' "$profile" &>/dev/null # clean all lines with special comment
+apply_start_behavior() {
+  log "apply start behavior to $1"
+  sed -i '/#@gord0nf\/software/d' "$1" &>/dev/null # clean all lines with special comment
   case "$ymlconf_config_sway_startBehavior" in
   login | prompt)
-    echo "SWAY_START=$ymlconf_config_sway_startBehavior bash '$CONFIG/scripts/profile.sh' #@gord0nf/software" \
-      >>"$profile"
+    echo -e "\nSWAY_START=$ymlconf_config_sway_startBehavior '$CONFIG/scripts/profile.sh' #@gord0nf/software" \
+      >>"$1"
     ;;
   esac
+}
+
+# NOTE: it is important that ~/.bashrc is sourced in shell profile files, because it defines some env
+# vars for sway. 
+
+# make sure profile file for login shell exists
+loginshell=$(basename "$(getent passwd "$(whoami)" | cut -d: -f7)")
+case "$loginshell" in 
+  bash)
+    if ! [[ -f ~/.profile || -f ~/.bash_profile ]]; then
+      log 'creating minimal ~/.profile, since login shell is bash'
+      echo '[ -n "$BASH_VERSION" ] && [ -f ~/.bashrc ] && . ~/.bashrc' > ~/.profile
+    fi
+    ;;
+  zsh)
+    if ! [[ -f ~/.zprofile ]]; then
+      log 'creating minimal ~/.zprofile, since login shell is zsh'
+      echo '[ -f ~/.zshrc ] && . ~/.zshrc' > ~/.zprofile
+    fi
+    ;;
+esac
+
+# apply to profiles
+profiles=(~/.profile ~/.bash_profile ~/.zprofile)
+for p in "${profiles[@]}"; do
+  if [[ -f "$p" ]]; then
+    apply_start_behavior "$p"
+    grep -qE '\.bashrc|\.zshrc' "$p" ||
+      warn "it doesn't look like '$p' is sourcing .bashrc or .zshrc, which could be problematic"
+  fi
 done
