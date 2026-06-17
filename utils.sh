@@ -215,20 +215,22 @@ set_global_env() {
     export "$name"="${!name}$value"
     existing_line=$(grep -oE -m 1 "^$name\\+=.*$" "$GLOBAL_ENV") &&
       sed -i "/^$name+=/d" "$GLOBAL_ENV"
-    echo "$name+=${existing_line#*=}$value" >>"$GLOBAL_ENV"
+    [[ "$existing_line" =~ \"(.*)\" ]] && existing_line=${BASH_REMATCH[1]}
+    echo "$name+=\"${existing_line#*=}$value\"" >>"$GLOBAL_ENV"
   elif [[ "$2" == '-u'* ]]; then
     export "$name"=
     sed -i "/^$name=/d" "$GLOBAL_ENV"
   else
     export "$name"="$value"
     sed -i "/^$name=/d" "$GLOBAL_ENV"
-    echo "$name=$value" >>"$GLOBAL_ENV"
+    echo "$name=\"$value\"" >>"$GLOBAL_ENV"
   fi
 }
 
 add_global_path() {
   local p=$(convert_path_if_needed --unix "$1") # global PATH stored in unix format
   local global_PATH=$(sed -n 's/^PATH+=\(.*\)/\1/p' "$GLOBAL_ENV" 2>/dev/null)
+  [[ "$global_PATH" =~ \"(.*)\" ]] && global_PATH=${BASH_REMATCH[1]}
   if [ -d "$p" ] && [[ ":$global_PATH:" != *":$p:"* ]]; then
     set_global_env PATH ":$p" -append
   fi
