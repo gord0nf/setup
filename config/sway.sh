@@ -26,6 +26,8 @@ make_directory_link "$CONFIG" "$sway_dir"
   set_global_env SWAYBAR "$ymlconf_config_sway_bar" ||
   set_global_env SWAYBAR -unset
 
+set_global_env GTK_THEME 'Adwaita:dark'
+
 # start behavior configuration --------------------------------------------------------------------
 # ymlconf_config_sway_startBehavior should be login|prompt|manual
 
@@ -41,23 +43,23 @@ apply_start_behavior() {
 }
 
 # NOTE: it is important that ~/.bashrc is sourced in shell profile files, because it defines some env
-# vars for sway. 
+# vars for sway.
 
 # make sure profile file for login shell exists
 loginshell=$(basename "$(getent passwd "$(whoami)" | cut -d: -f7)")
-case "$loginshell" in 
-  bash)
-    if ! [[ -f ~/.profile || -f ~/.bash_profile ]]; then
-      log 'creating minimal ~/.profile, since login shell is bash'
-      echo '[ -n "$BASH_VERSION" ] && [ -f ~/.bashrc ] && . ~/.bashrc' > ~/.profile
-    fi
-    ;;
-  zsh)
-    if ! [[ -f ~/.zprofile ]]; then
-      log 'creating minimal ~/.zprofile, since login shell is zsh'
-      echo '[ -f ~/.zshrc ] && . ~/.zshrc' > ~/.zprofile
-    fi
-    ;;
+case "$loginshell" in
+bash)
+  if ! [[ -f ~/.profile || -f ~/.bash_profile ]]; then
+    log 'creating minimal ~/.profile, since login shell is bash'
+    echo '[ -n "$BASH_VERSION" ] && [ -f ~/.bashrc ] && . ~/.bashrc' >~/.profile
+  fi
+  ;;
+zsh)
+  if ! [[ -f ~/.zprofile ]]; then
+    log 'creating minimal ~/.zprofile, since login shell is zsh'
+    echo '[ -f ~/.zshrc ] && . ~/.zshrc' >~/.zprofile
+  fi
+  ;;
 esac
 
 # apply to profiles
