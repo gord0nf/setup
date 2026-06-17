@@ -1,12 +1,13 @@
 #!/bin/bash
 
 fonts=$(find "$(dirname "${BASH_SOURCE[0]}")" -type f \( -name "*.ttf" -o -name "*.otf" \))
-[[ "$EUID" -eq 0 ]] && dest=/usr/share/fonts || dest=$HOME/.local/share/fonts
+[[ "$EUID" -eq 0 ]] && fontdir=/usr/share/fonts || fontdir=$HOME/.local/share/fonts
 mkdir -p "$dest" &>/dev/null
 
 for font in $fonts; do
-  chmod 644 "$font" # https://wiki.debian.org/Fonts
+  dest="$fontdir/$(basename "$font")"
   cp "$font" "$dest"
+  chmod 644 "$dest" # https://wiki.debian.org/Fonts
 done
 
-fc-cache
+fc-cache || sudo fc-cache
