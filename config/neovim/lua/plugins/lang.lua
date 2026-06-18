@@ -5,6 +5,7 @@
 --  - servers:          Table of { ls_name: ls_opts } for nvim-lsp
 --  - plugins:          Array of Lazy plugins to install
 --  - parsers:          Array of names of Treesitter parsers to install
+--  - formatters:       Table of { formatter: opts } for Conform
 --  - formatters_by_ft: Table of { ft: formatters } for Conform
 --  - linters_by_ft:    Table of { ft: linters } for nvim-lint
 
@@ -18,6 +19,7 @@ local aggregated_stuff = {
   servers = {}, -- Table of { ls_name: ls_opts | func() -> ls_opts } for nvim-lsp
   plugins = {}, -- Array of Lazy plugins to install
   parsers = {}, -- Array of names of Treesitter parsers to install
+  formatters = {}, -- Table of { formatter: opts } for Conform
   formatters_by_ft = {}, -- Table of { ft: formatters } for Conform
   linters_by_ft = {}, -- Table of { ft: linters } for nvim-lint
 }
@@ -26,6 +28,7 @@ for _, lang in ipairs(ENABLED_LANGS) do
   merge_tables(aggregated_stuff.servers, l.servers or {})
   concat_tables(aggregated_stuff.plugins, l.plugins or {})
   concat_tables(aggregated_stuff.parsers, l.parsers or {})
+  merge_tables(aggregated_stuff.formatters, l.formatters or {})
   merge_tables(aggregated_stuff.formatters_by_ft, l.formatters_by_ft or {})
   merge_tables(aggregated_stuff.linters_by_ft, l.linters_by_ft or {})
 end
@@ -64,6 +67,17 @@ local plugins = {
           server_opts = server_opts == true and {} or server_opts
           if (type(server_opts) ~= 'table' or server_opts.mason ~= false) and vim.tbl_contains(available, server) then
             ensure_installed[#ensure_installed + 1] = server
+          end
+        end
+      end
+      for formatter, formatter_opts in pairs(aggregated_stuff.formatters) do
+        if formatter_opts then
+          formatter_opts = formatter_opts == true and {} or formatter_opts
+          if
+            (type(formatter_opts) ~= 'table' or formatter_opts.mason ~= false)
+            and vim.tbl_contains(available, formatter)
+          then
+            ensure_installed[#ensure_installed + 1] = formatter
           end
         end
       end
@@ -215,6 +229,7 @@ local plugins = {
     opts = {},
     config = function()
       require('conform').setup({
+        formatters = aggregated_stuff.formatters,
         formatters_by_ft = aggregated_stuff.formatters_by_ft,
         format_on_save = {
           lsp_fallback = true,
