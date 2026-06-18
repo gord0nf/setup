@@ -12,7 +12,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../utils.sh" || {
 
 # install/update tpm
 tpm_dir=~/.tmux/plugins/tpm
-[[ -d $tpm_dir ]] && {
+[[ -d "$tpm_dir" ]] && {
   log 'updating tpm'
   git -C $tpm_dir pull
 } || {
