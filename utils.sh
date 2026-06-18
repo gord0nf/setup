@@ -229,9 +229,11 @@ set_global_env() {
 
 add_global_path() {
   local p=$(convert_path_if_needed --unix "$1") # global PATH stored in unix format
+  [[ "$2" == '--force' || -d "$p" ]] || return  # ensure existence
+
   local global_PATH=$(sed -n 's/^PATH+=\(.*\)/\1/p' "$GLOBAL_ENV" 2>/dev/null)
   [[ "$global_PATH" =~ \"(.*)\" ]] && global_PATH=${BASH_REMATCH[1]}
-  if [ -d "$p" ] && [[ ":$global_PATH:" != *":$p:"* ]]; then
+  if [[ ":$global_PATH:" != *":$p:"* ]]; then
     set_global_env PATH ":$p" -append
   fi
 }
