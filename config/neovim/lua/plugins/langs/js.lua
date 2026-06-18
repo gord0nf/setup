@@ -58,6 +58,14 @@ return {
     'typescript',
   },
 
+  formatters = {
+    prettierd = {
+      env = {
+        PRETTIERD_DEFAULT_CONFIG = vim.fs.joinpath(vim.fn.stdpath('config'), '.prettierrc'),
+      },
+    },
+  },
+
   formatters_by_ft = {
     javascript = { 'prettierd' },
     typescript = { 'prettierd' },

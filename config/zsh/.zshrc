@@ -87,7 +87,7 @@ fi
 
 # prettier ----------------------------------------------------------------------------------------
 
-PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/nodejs/prettierrc.json"
+export PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/neovim/.prettierrc"
 
 # aliases -----------------------------------------------------------------------------------------
 
