@@ -1,3 +1,3 @@
 #!/bin/bash
 
-${APT:-apt} install -y mpd mpc
+${APT:-apt} install -y mpd
