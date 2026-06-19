@@ -5,8 +5,8 @@ software.csv
 .env*
 software.yaml
 software.yml
-config/scripts/tmux-*
-!config/scripts/tmux-software
+scripts/tmux-*
+!scripts/tmux-software
 
 # neovim
 **/lazy-lock.json
