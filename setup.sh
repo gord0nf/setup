@@ -250,7 +250,14 @@ if [[ $(get_os) == windows ]] && command_exists powershell; then
   )" || warn "couldn't set SOFTWARE sys env var, some Windows things might be iffy"
 fi
 
-# set wallpaper dir
+# default environment vars -----------------------------------------------
+
+[[ -v UA ]] || set_global_env UA \
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36'
+[[ -v PRETTIERD_DEFAULT_CONFIG ]] || set_global_env PRETTIERD_DEFAULT_CONFIG \
+  "$SOFTWARE_ROOT/config/neovim/.prettierrc"
+
+# wallpaper dir
 if ! [[ -v WALLPAPERS ]]; then
   case $(get_os) in
   windows) set_global_env WALLPAPERS "$APPDATA/wallpapers" ;;

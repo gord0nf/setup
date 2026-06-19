@@ -42,10 +42,6 @@ if command_exists oh-my-posh; then
   [[ -f "$conf" ]] && eval "$(oh-my-posh init bash --config "$conf")"
 fi
 
-# prettier ----------------------------------------------------------------------------------------
-
-export PRETTIERD_DEFAULT_CONFIG="$SOFTWARE/config/neovim/.prettierrc"
-
 # aliases -----------------------------------------------------------------------------------------
 
 # Basic cmd line utils
