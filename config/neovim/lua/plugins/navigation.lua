@@ -16,8 +16,9 @@ local plugins = {
       },
     },
     keys = {
-      { '<leader> ', '<cmd>FzfLua global<cr>', desc = 'Fzf find files' },
+      { '<leader> ', '<cmd>FzfLua global<cr>', desc = 'Fzf global' },
       { '<leader>/', '<cmd>FzfLua live_grep<cr>', desc = 'Fzf live grep' },
+      { '<leader>ff', '<cmd>FzfLua files<cr>', desc = 'Fzf find files' },
       {
         '<leader>fc',
         function()
@@ -32,6 +33,9 @@ local plugins = {
         end,
         desc = 'Fzf find software files',
       },
+      { '<leader>fb', '<cmd>FzfLua buffers<cr>', desc = 'Fzf find buffers' },
+      { '<leader>fr', '<cmd>FzfLua lsp_references<cr>', desc = 'Fzf find lsp_references' },
+      { '<leader>fd', '<cmd>FzfLua lsp_definitions<cr>', desc = 'Fzf find lsp_definitions' },
       { '<leader>gs', '<cmd>FzfLua git_status<cr>', desc = 'Fzf git status' },
       { '<leader>gb', '<cmd>FzfLua git_blame<cr>', desc = 'Fzf git blame' },
       { '<leader>gc', '<cmd>FzfLua git_commits<cr>', desc = 'Fzf git commits' },
