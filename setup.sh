@@ -262,7 +262,7 @@ mkdir -p "$WALLPAPERS"
 # root yml config stuff --------------------------------------------------
 
 [[ -v ymlconf_config_terminal ]] && set_global_env TERM "$ymlconf_config_terminal"
-[[ -v ymlconf_config_editor ]] && set_global_env EDITOR "$(which "$ymlconf_config_editor")"
+[[ -v ymlconf_config_editor ]] && set_global_env EDITOR "$ymlconf_config_editor"
 [[ -v ymlconf_config_fontsize ]] && set_global_env FONT_SIZE "$ymlconf_config_fontsize"
 [[ -v ymlconf_config_font ]] && set_global_env FONT "$ymlconf_config_font" ||
   set_global_env FONT "0xProto Nerd Font"
