@@ -23,6 +23,10 @@ for nvim_dir in "${default_nvim_dirs[@]}"; do
   fi
 done
 
+# set default prettier
+[[ -v PRETTIERD_DEFAULT_CONFIG ]] || set_global_env PRETTIERD_DEFAULT_CONFIG \
+  "$CONFIG/.prettierrc"
+
 # extra configuration -----------------------------------------------------------------------------
 # by creating a settings.lua file that is imported by neovim config
 

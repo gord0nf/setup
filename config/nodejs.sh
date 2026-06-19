@@ -18,3 +18,7 @@ log "setting npm prefix to $npm_prefix"
 mkdir -p "$npm_prefix"
 npm config set prefix "$npm_prefix"
 add_global_path "$npm_prefix/bin" --force
+
+# set default prettier
+[[ -v PRETTIERD_DEFAULT_CONFIG ]] || set_global_env PRETTIERD_DEFAULT_CONFIG \
+  "$CONFIG/../neovim/.prettierrc"
