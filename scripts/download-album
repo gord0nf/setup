@@ -1,0 +1,13 @@
+#!/bin/bash
+
+default_ua='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36'
+
+yt-dlp \
+  --extract-audio --audio-format m4a -f bestaudio \
+  --add-metadata --embed-metadata --parse-metadata "playlist_index:%(track_number)s" \
+  --embed-thumbnail --convert-thumbnails png \
+  --ppa "ThumbnailsConvertor+ffmpeg_o:-c:v png -vf crop=\"'if(gt(ih,iw),iw,ih)':'if(gt(iw,ih),ih,iw)'\"" \
+  --user-agent "${UA:-$default_ua}" \
+  --windows-filenames --continue --no-overwrites --concurrent-fragments 4 \
+  --output "%(album,playlist_title)U/%(track_number,playlist_index)s %(title)U.%(ext)s" \
+  "$@"
