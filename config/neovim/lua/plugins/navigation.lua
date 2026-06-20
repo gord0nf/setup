@@ -14,6 +14,17 @@ local plugins = {
           ['<C-space>'] = 'toggle-preview',
         },
       },
+      actions = {
+        git = {
+          status = {
+            ['ctrl-d'] = {
+              fn = function(selected)
+                vim.print(selected)
+              end,
+            },
+          },
+        },
+      },
     },
     keys = {
       { '<leader> ', '<cmd>FzfLua global<cr>', desc = 'Fzf global' },
@@ -63,7 +74,7 @@ local plugins = {
       {
         '<leader>e',
         function()
-          MiniFiles.open()
+          require('mini.files').open()
         end,
         desc = 'MiniFiles open',
       },
