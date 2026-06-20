@@ -109,10 +109,9 @@ make_directory_link() {
 }
 
 download() {
-  local url=$1
   local tmp=$(mktemp)
-  curl --ssl-revoke-best-effort --fail -L -o "$tmp" "$url"
-  echo "$tmp"
+  curl --ssl-revoke-best-effort --fail -L -o "$tmp" "$1" &&
+    echo "$tmp"
 }
 
 # returns with 0 if success, 1 if download failed, 2 if extract failed
@@ -247,7 +246,9 @@ register() {
       *)
         [[ $EUID -eq 0 ]] && symlink_dir='/usr/local/bin/' || symlink_dir="$HOME/.local/bin"
         mkdir -p "$symlink_dir" && add_global_path "$symlink_dir" # just in case
-        ln --symbolic "$target_bin" "$symlink_dir/$(basename "$target_bin")"
+        symlink="$symlink_dir/$(basename "$target_bin")"
+        rm -f "$symlink"
+        ln --symbolic "$target_bin" "$symlink"
         ;;
       esac
     fi
