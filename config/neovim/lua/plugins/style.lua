@@ -4,6 +4,8 @@ local plugins = {
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
       sections = {
+        lualine_a = { 'mode' },
+        lualine_b = { 'diff' },
         lualine_c = {
           {
             function()

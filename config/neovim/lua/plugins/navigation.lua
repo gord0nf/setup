@@ -18,6 +18,7 @@ local plugins = {
     keys = {
       { '<leader> ', '<cmd>FzfLua global<cr>', desc = 'Fzf global' },
       { '<leader>/', '<cmd>FzfLua live_grep<cr>', desc = 'Fzf live grep' },
+      { '<leader>F', '<cmd>FzfLua resume<cr>', desc = 'Fzf resume' },
       { '<leader>ff', '<cmd>FzfLua files<cr>', desc = 'Fzf find files' },
       {
         '<leader>fc',
